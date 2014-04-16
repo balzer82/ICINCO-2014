@@ -381,36 +381,36 @@
 
 
 
-%\author{
-%\IEEEauthorblockN{Paul Balzer}
-%\IEEEauthorblockA{University of Applied Sciences\\
-%Dresden, Germany\\
-%balzer@htw-dresden.de}
-%\and
-%\IEEEauthorblockN{Toralf Trautmann}
-%\IEEEauthorblockA{University of Applied Sciences\\
-%Dresden, Germany\\
-%trautmann@mw.htw-dresden.de}
-%\and
-%\IEEEauthorblockN{Oliver Michler}
-%\IEEEauthorblockA{Technical University\\
-%Dresden, Germany\\
-%oliver.michler@tu-dresden.de}
-%}
-
 \author{
-\IEEEauthorblockN{t.b.d.}
-\IEEEauthorblockA{t.b.d.\\
-t.b.d.}
+\IEEEauthorblockN{Paul Balzer}
+\IEEEauthorblockA{University of Applied Sciences\\
+Dresden, Germany\\
+balzer@htw-dresden.de}
 \and
-\IEEEauthorblockN{t.b.d.}
-\IEEEauthorblockA{t.b.d.\\
-t.b.d.}
+\IEEEauthorblockN{Toralf Trautmann}
+\IEEEauthorblockA{University of Applied Sciences\\
+Dresden, Germany\\
+trautmann@mw.htw-dresden.de}
 \and
-\IEEEauthorblockN{t.b.d.}
-\IEEEauthorblockA{t.b.d.\\
-t.b.d.}
+\IEEEauthorblockN{Oliver Michler}
+\IEEEauthorblockA{Technical University\\
+Dresden, Germany\\
+oliver.michler@tu-dresden.de}
 }
+
+%\author{
+%\IEEEauthorblockN{t.b.d.}
+%\IEEEauthorblockA{t.b.d.\\
+%t.b.d.}
+%\and
+%\IEEEauthorblockN{t.b.d.}
+%\IEEEauthorblockA{t.b.d.\\
+%t.b.d.}
+%\and
+%\IEEEauthorblockN{t.b.d.}
+%\IEEEauthorblockA{t.b.d.\\
+%t.b.d.}
+%}
 
 
 
@@ -858,7 +858,7 @@ As one can see, the stop before the last left turn got a high position measureme
 
 The state variables for vehicle speed and yawrate are nearly perfectly aligned, because they fit very well and they are state control variables as well. The state is forced to follow them.
 
-While standing still, the heading measurement of the GNSS receiver is inaccurate (see Fig. \ref{ctrv-states} between filter step $k\approx2100\dotsc2300$). The filter performes very well on this situation and keeps the heading in the correct direction. The EKF position estimation (see Fig. \ref{ctrv-position-detail}) is not disturbed by inaccurate GNSS measurements while standing still and is dynamically responsive while driving. 
+While standing still, the heading measurement of the GNSS receiver is inaccurate (see Fig. \ref{ctrv-states} between filter step $k\approx600\dotsc700$). The filter performes very well on this situation and keeps the heading in the correct direction. The EKF position estimation (see Fig. \ref{ctrv-position-detail}) is not disturbed by inaccurate GNSS measurements while standing still and is dynamically responsive while driving. 
 
 For the conducted test drive, the values for the measurement uncertainties in $R$ are calculated like shown in figure \ref{adaptive-R}.
 

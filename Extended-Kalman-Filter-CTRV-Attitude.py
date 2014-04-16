@@ -3,11 +3,11 @@
 
 # <markdowncell>
 
-# ![ICINCO2014](http://www.icinco.org/App_Themes/2014/Images/up.png)
+# Paper for [11th International Conference on Informatics in Control, Automation and Robotics (ICINCO) 2014](http://www.icinco.org/)
 
 # <markdowncell>
 
-# Paper for [11th International Conference on Informatics in Control, Automation and Robotics (ICINCO) 2014](http://www.icinco.org/)
+# ![ICINCO2014](http://www.icinco.org/App_Themes/2014/Images/up.png)
 
 # <codecell>
 
@@ -15,6 +15,7 @@ import numpy as np
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 from scipy.stats import norm
+import time
 from IPython.display import Image as ImageDisp
 from sympy import Symbol, symbols, Matrix, sin, cos, latex, Plot
 from sympy.interactive import printing
@@ -39,6 +40,7 @@ printing.init_printing()
 
 # <markdowncell>
 
+# <img style="float: right; width: 400px; margin-right: 300px;" src="http://mechlab-engineering.de/wordpress/wp-content/uploads/2014/03/Fahrzeug-Koordinatensystem-DIN70000-669x333.png" />
 # $$x_k= \left[\begin{matrix}x\\y\\\psi\\v\\\dot\psi\\\phi\\\dot\phi\\\Theta\\\dot\Theta\end{matrix}\right] = \left[ \matrix{ \text{Position X} \\ \text{Position Y} \\ \text{Heading} \\ \text{Velocity} \\ \text{Yaw Rate} \\ \text{Pitch} \\ \text{Pitchrate} \\ \text{Roll} \\ \text{Rollrate}} \right]$$
 
 # <codecell>
@@ -47,8 +49,8 @@ numstates=9 # States
 
 # <codecell>
 
-dt = 1.0/50.0 # Sample Rate of the Measurements is 50Hz
-dtGPS=1.0/10.0 # Sample Rate of GPS is 10Hz
+dt    = 1.0/50.0 # Sample Rate of the Measurements is 50Hz
+dtGPS = 1.0/10.0 # Sample Rate of GPS is 10Hz
 
 # <markdowncell>
 
@@ -69,48 +71,6 @@ As = Matrix([[xs+(vs/dpsis)*(sin(psis+dpsis*dts)-sin(psis))],
              [thetas+dthetas*dts],
              [dthetas]])
 state = Matrix([xs,ys,psis,vs,dpsis,phis,dphis,thetas,dthetas])
-
-# <headingcell level=2>
-
-# Initial Uncertainty
-
-# <markdowncell>
-
-# Initialized with $0$ means you are pretty sure where the vehicle starts
-
-# <codecell>
-
-P = 1e5*np.eye(numstates)
-print(P.shape)
-
-fig = plt.figure(figsize=(numstates/2, numstates/2))
-im = plt.imshow(P, interpolation="none", cmap=plt.get_cmap('binary'))
-plt.title('Initial Covariance Matrix $P$')
-ylocs, ylabels = plt.yticks()
-# set the locations of the yticks
-plt.yticks(np.arange(10))
-# set the locations and labels of the yticks
-plt.yticks(np.arange(9), \
-           ('$x$', '$y$', '$\psi$', '$v$', '$\dot \psi$', '$\phi$', '$\dot \phi$', '$\Theta$', '$\dot \Theta$'),\
-           fontsize=22)
-
-xlocs, xlabels = plt.xticks()
-# set the locations of the yticks
-plt.xticks(np.arange(10))
-# set the locations and labels of the yticks
-plt.xticks(np.arange(9), \
-           ('$x$', '$y$', '$\psi$', '$v$', '$\dot \psi$', '$\phi$', '$\dot \phi$', '$\Theta$', '$\dot \Theta$'),\
-           fontsize=22)
-
-plt.xlim([-0.5,8.5])
-plt.ylim([8.5, -0.5])
-
-from mpl_toolkits.axes_grid1 import make_axes_locatable
-divider = make_axes_locatable(plt.gca())
-cax = divider.append_axes("right", "5%", pad="3%")
-plt.colorbar(im, cax=cax)
-
-plt.tight_layout()
 
 # <headingcell level=2>
 
@@ -189,7 +149,7 @@ print latex(Gs)
 datafile = '2014-03-26-000-Data.csv'
 
 date, \
-time, \
+timem, \
 millis, \
 ax, \
 ay, \
@@ -212,7 +172,7 @@ epe, \
 fix, \
 satellites_view, \
 satellites_used, \
-temp = np.loadtxt(datafile, delimiter=',', unpack=True, skiprows=1)
+temp = np.loadtxt(datafile, delimiter=',', unpack=True, skiprows=8001)
 
 print('Read \'%s\' successfully.' % datafile)
 
@@ -277,7 +237,7 @@ plt.plot(rollrate, label='Rollrate $\dot \Theta$')
 plt.plot(yawrate, label='Yawrate $\dot \psi$')
 plt.xlabel('Filterstep')
 plt.ylabel('Turnrate $(^\circ/s)$')
-plt.legend()
+plt.legend(loc='best')
 
 # <headingcell level=3>
 
@@ -294,10 +254,11 @@ N   = len(Ypitchrate)/2+1
 Xfft = np.linspace(0, 1.0/dt/2, N)
 
 plt.figure(figsize=(8,3))
-plt.plot(Xfft, 2.0*np.abs(Ypitchrate[:N])/N, label='Pitchrate', alpha=0.8)
-plt.plot(Xfft, 2.0*np.abs(Yrollrate[:N])/N, label='Rollrate', alpha=0.8)
-plt.plot(Xfft, 2.0*np.abs(Yyawrate[:N])/N, label='Yawrate', alpha=0.8)
-plt.xlim(0, 5)
+plt.plot(Xfft, 2.0*np.abs(Ypitchrate[:N])/N, label='Pitchrate', alpha=0.9)
+plt.plot(Xfft, 2.0*np.abs(Yrollrate[:N])/N, label='Rollrate', alpha=0.9)
+plt.plot(Xfft, 2.0*np.abs(Yyawrate[:N])/N, label='Yawrate', alpha=0.9)
+#plt.xlim(0, 5)
+plt.axvline(5, color='grey', label='Cutoff Frequency', alpha=0.4)
 plt.legend()
 plt.ylabel('Amplitude $^\circ/s /Hz$')
 plt.xlabel('Frequency $Hz$')
@@ -308,7 +269,7 @@ plt.xlabel('Frequency $Hz$')
 
 # <codecell>
 
-cutoff = 3. # Hz
+cutoff = 5. # Hz
 fs = 1/dt
 nyq = fs/2.
 filterorder = 5
@@ -327,19 +288,19 @@ plt.subplot(311)
 plt.plot(pitchrate, label='Pitchrate')
 plt.plot(pitchrateLowpass, label='Pitchrate %iHz Lowpass-filtered' % cutoff)
 plt.ylabel('Pitchrate $(^\circ/s)$')
-plt.legend()
+plt.legend(loc='best')
 
 plt.subplot(312)
 plt.plot(rollrate, label='Rollrate')
 plt.plot(rollrateLowpass, label='Rollrate %iHz Lowpass-filtered' % cutoff)
 plt.ylabel('Rollrate $(^\circ/s)$')
-plt.legend()
+plt.legend(loc='best')
 
 plt.subplot(313)
 plt.plot(yawrate, label='Yawrate')
 plt.plot(yawrateLowpass, label='Yawrate %iHz Lowpass-filtered' % cutoff)
 plt.ylabel('Yawrate $(^\circ/s)$')
-plt.legend()
+plt.legend(loc='best')
 
 
 plt.xlabel('Filterstep')
@@ -361,9 +322,9 @@ plt.legend()
 
 # <codecell>
 
-print('max Pitchrate-Acceleration: %.2f' % np.max(np.diff(pitchrateLowpass)/dt))
-print('max Rollrate-Acceleration: %.2f' % np.max(np.diff(rollrateLowpass)/dt))
-print('max Yawrate-Acceleration: %.2f' % np.max(np.diff(yawrateLowpass)/dt))
+print('max Pitchrate-Acceleration: %.1f °/s2' % np.max(np.diff(pitchrateLowpass)/dt))
+print('max Rollrate-Acceleration: %.1f °/s2' % np.max(np.diff(rollrateLowpass)/dt))
+print('max Yawrate-Acceleration: %.1f °/s2' % np.max(np.diff(yawrateLowpass)/dt))
 
 # <headingcell level=2>
 
@@ -395,9 +356,9 @@ control
 
 amax = 5.0    # m/s2
 
-pitchrateaccmax=  200.0  # Grad/s2
-rollrateaccmax =  130.0  # Grad/s2
-yawrateaccmax  =  55.0  # Grad/s2
+pitchrateaccmax=  114.0  # Grad/s2
+rollrateaccmax =  80.0  # Grad/s2
+yawrateaccmax  =  37.0  # Grad/s2
 
 svQ = (amax*dt)      # Velocity
 syQ = (yawrateaccmax*np.pi/180.0*dt)   # Yawrate
@@ -588,8 +549,8 @@ spitch= (rho + gamma*ax)**2
 # <codecell>
 
 plt.figure(figsize=(6,2))
-plt.semilogy(sroll, label='$\sigma_{\Theta}$', marker='o', markevery=150, alpha=0.6)
-plt.semilogy(spitch, label='$\sigma_{\phi}$', marker='*', markevery=150, alpha=0.6)
+plt.semilogy(sroll, label='$\sigma_{\Theta}$', marker='o', markevery=150, alpha=0.8)
+plt.semilogy(spitch, label='$\sigma_{\phi}$', marker='*', markevery=150, alpha=0.9)
 plt.ylabel('Values for $R$ Matrix')
 plt.xlabel('Filterstep $k$')
 plt.legend(bbox_to_anchor=(0.0, 1.02, 1., .102), loc=3,
@@ -642,7 +603,49 @@ plt.scatter(float(x[0]), float(x[1]), s=100)
 plt.title('Initial Location')
 plt.axis('equal')
 
-# <headingcell level=3>
+# <headingcell level=2>
+
+# Initial Uncertainty
+
+# <markdowncell>
+
+# Initialized with $0$ means you are pretty sure where the vehicle starts and in which direction it is heading. Initialized with high values means, that you trust the measurements first, to align the state vector $x$ with them.
+
+# <codecell>
+
+P = 1e5*np.eye(numstates)
+print(P.shape)
+
+fig = plt.figure(figsize=(numstates/2, numstates/2))
+im = plt.imshow(P, interpolation="none", cmap=plt.get_cmap('binary'))
+plt.title('Initial Covariance Matrix $P$')
+ylocs, ylabels = plt.yticks()
+# set the locations of the yticks
+plt.yticks(np.arange(10))
+# set the locations and labels of the yticks
+plt.yticks(np.arange(9), \
+           ('$x$', '$y$', '$\psi$', '$v$', '$\dot \psi$', '$\phi$', '$\dot \phi$', '$\Theta$', '$\dot \Theta$'),\
+           fontsize=22)
+
+xlocs, xlabels = plt.xticks()
+# set the locations of the yticks
+plt.xticks(np.arange(10))
+# set the locations and labels of the yticks
+plt.xticks(np.arange(9), \
+           ('$x$', '$y$', '$\psi$', '$v$', '$\dot \psi$', '$\phi$', '$\dot \phi$', '$\Theta$', '$\dot \Theta$'),\
+           fontsize=22)
+
+plt.xlim([-0.5,8.5])
+plt.ylim([8.5, -0.5])
+
+from mpl_toolkits.axes_grid1 import make_axes_locatable
+divider = make_axes_locatable(plt.gca())
+cax = divider.append_axes("right", "5%", pad="3%")
+plt.colorbar(im, cax=cax)
+
+plt.tight_layout()
+
+# <headingcell level=2>
 
 # Put everything together as a measurement vector
 
@@ -683,9 +686,13 @@ K3 = []
 K4 = []
 dstate=[]
 
-# <headingcell level=2>
+# <codecell>
 
-# Extended Kalman Filter
+starttime = time.time()
+
+# <headingcell level=1>
+
+# Extended Kalman Filter Step
 
 # <markdowncell>
 
@@ -843,7 +850,11 @@ for filterstep in range(m):
     K3.append(float(K[3,0]))
     K4.append(float(K[4,0]))
 
-# <headingcell level=2>
+# <codecell>
+
+print('One Filterstep took %.4fs (average) on MacBook Pro 2.5GHz Intel i5' % ((time.time() - starttime)/m))
+
+# <headingcell level=1>
 
 # Plots
 
@@ -851,9 +862,9 @@ for filterstep in range(m):
 
 %pylab inline --no-import-all
 
-# <headingcell level=3>
+# <headingcell level=2>
 
-# Uncertainties of Matrix P
+# Uncertainties of Matrix $P$
 
 # <codecell>
 
@@ -908,9 +919,9 @@ plt.colorbar(im, cax=cax)
 plt.tight_layout()
 plt.savefig('Covariance-Matrix-imshow-P.eps', bbox_inches='tight')
 
-# <headingcell level=3>
+# <headingcell level=2>
 
-# Kalman Gains K
+# Kalman Gains in $K$
 
 # <codecell>
 
@@ -940,18 +951,18 @@ fig = plt.figure(figsize=(8,numstates))
 
 # Course
 plt.subplot(511)
-plt.step(range(len(measurements[0])),(course+180.0)%(360.0)-180.0, label='$\psi$ (GPS)', marker='o', markevery=150, alpha=0.6)
+plt.step(range(len(measurements[0])),(course+180.0)%(360.0)-180.0, label='$\psi$ (GNSS)', marker='o', markevery=150, alpha=0.6)
 plt.step(range(len(measurements[0])),np.multiply(x2,180.0/np.pi), label='$\psi$', marker='*', markevery=140)
 plt.ylabel('Course $^\circ$')
 plt.yticks(np.arange(-180, 181, 45))
 plt.ylim([-200,200])
-plt.legend(bbox_to_anchor=(0.0, 0., 0.4, .06), loc=3,
+plt.legend(bbox_to_anchor=(0.3, 0., 0.4, .06), loc=3,
        ncol=2, mode="expand", borderaxespad=0.)
 #plt.title('State Estimates $x_k$')
 
 # Velocity
 plt.subplot(512)
-plt.step(range(len(measurements[0])),speed, label='$v$ (GPS)', marker='o', markevery=150, alpha=0.6)
+plt.step(range(len(measurements[0])),speed, label='$v$ (GNSS)', marker='o', markevery=150, alpha=0.6)
 plt.step(range(len(measurements[0])),np.multiply(x3,3.6), label='$v$', marker='*', markevery=140)
 plt.ylabel('Velocity $km/h$')
 #plt.ylim([0, 30])
@@ -998,7 +1009,7 @@ plt.savefig('Extended-Kalman-Filter-CTRV-Attitude-State-Estimates.eps', bbox_inc
 
 # <codecell>
 
-fig = plt.figure(figsize=(10,6))
+fig = plt.figure(figsize=(6,4))
 
 # EKF State
 qscale= 0.5*np.divide(x3[::5],np.max(x3))+0.1
@@ -1009,27 +1020,31 @@ plt.plot(x0[::5],x1[::5], label='EKF Position Estimation', color='k', alpha=0.5)
 plt.scatter(mx[::50],my[::50], s=120, label='GNSS Measurements (every 10th)',\
             c=sp[::50], cmap='autumn_r', norm=matplotlib.colors.LogNorm())
 cbar=plt.colorbar()
-cbar.ax.set_ylabel(u'Adaptive Measurement Noise Covariance', rotation=270)
+cbar.ax.set_ylabel(u'Adaptive $R$ values', rotation=270)
 cbar.ax.set_xlabel(u'$m^2$')
 
 # Annotations
 plt.annotate('see Fig. 12', xy=(110, 150), xytext=(120, 50),fontsize=16, ha='center',
             arrowprops=dict(facecolor='k', shrink=0.05))
 
-bbox_props = dict(boxstyle="rarrow,pad=0.3", ec="w", lw=2)
-t = plt.text(450, 290, "Driving Direction", ha="center", va="center", rotation=-32,
-            size=12,
+bbox_props = dict(boxstyle="larrow,pad=0.3", ec="w", lw=2)
+t = plt.text(-80, 0, "Driving Direction", ha="center", va="center", rotation=-20,
+            size=10,
             bbox=bbox_props)
 
 plt.xlabel('X [m]')
 plt.ylabel('Y [m]')
-plt.title('Position of EKF state $x_k$, GNSS measurements and uncertainty $R$ (color)')
+#plt.title('Position Estimate and GNSS measurements')
 plt.legend(loc='best')
 plt.axis('equal')
 #plt.tight_layout()
 
 #plt.show()
 plt.savefig('Extended-Kalman-Filter-CTRV-Position.eps', bbox_inches='tight')
+
+# <headingcell level=3>
+
+# Detailed View
 
 # <codecell>
 
@@ -1055,43 +1070,10 @@ plt.ylabel('Y [m]')
 plt.legend(loc='upper left')
 plt.axis('equal')
 #plt.tight_layout()
-plt.xlim([96, 108])
-plt.ylim([172, 178])
+plt.xlim([-185, -145])
+plt.ylim([-15, 15])
 #plt.show()
 plt.savefig('Extended-Kalman-Filter-CTRV-Position-Detail.eps', bbox_inches='tight')
-
-# <codecell>
-
-fig = plt.figure(figsize=(6,3))
-
-# EKF State
-plt.plot(x0,x1, label=u'verbesserte Positionsschätzung', c='k')
-
-# Measurements
-plt.scatter(mx[::5],my[::5], s=40, label='GPS Positionsmessungen',\
-            c=sp[::5], cmap='autumn_r', norm=matplotlib.colors.LogNorm())
-
-bbox_props = dict(boxstyle="rarrow,pad=0.3", ec="w", lw=2)
-t = plt.text(85, 175, u"Hinfahrt", ha="center", va="center", rotation=66,
-            size=12,
-            bbox=bbox_props)
-
-bbox_props = dict(boxstyle="larrow,pad=0.3", ec="w", lw=2)
-t = plt.text(140, 165, u"Rückfahrt", ha="center", va="center", rotation=-20,
-            size=12,
-            bbox=bbox_props)
-
-
-plt.xlabel('X [m]')
-plt.ylabel('Y [m]')
-#plt.title('Position')
-plt.legend(loc='best')
-plt.axis('equal')
-#plt.tight_layout()
-plt.xlim([90, 138])
-plt.ylim([145, 185])
-#plt.show()
-plt.savefig('EKF.png', bbox_inches='tight',dpi=150)
 
 # <headingcell level=3>
 
@@ -1108,41 +1090,40 @@ lonekf = longitude[0]+ np.divide(x0,np.multiply(arc,np.cos(latitude*np.pi/180.0)
 
 # <codecell>
 
-fig = plt.figure(figsize=(10,4.5))
+fig = plt.figure(figsize=(10,3))
 
 # EKF State
 plt.plot(lonekf[::5],latekf[::5], label='EKF Position Estimation', color='k', alpha=0.5)
 
 # Measurements
-plt.scatter(longitude[::50],latitude[::50], s=50, label='GNSS Measurements (every 10th)',\
+plt.scatter(longitude[::50],latitude[::50], s=100, label='GNSS Measurements (every 10th)',\
             c=sp[::50], cmap='autumn_r', norm=matplotlib.colors.LogNorm())
 cbar=plt.colorbar()
-cbar.ax.set_ylabel(u'Adaptive Measurement Noise Covariance', rotation=270)
+cbar.ax.set_ylabel(u'Adaptive $R$', rotation=270)
 cbar.ax.set_xlabel(u'$m^2$')
 
 # Annotations
-plt.annotate('see Fig. 11', xy=(13.794, 51.041), xytext=(13.795, 51.04),fontsize=16, ha='center',
+plt.annotate('see Fig. 11', xy=(13.794, 51.04105), xytext=(13.7945, 51.0407),fontsize=16, ha='center',
             arrowprops=dict(facecolor='k', shrink=0.05))
 
-bbox_props = dict(boxstyle="rarrow,pad=0.3", ec="w", lw=2)
-t = plt.text(13.793, 51.041, "Driving Direction", ha="center", va="center", rotation=65,
-            size=12,
-            bbox=bbox_props)
 bbox_props = dict(boxstyle="larrow,pad=0.3", ec="w", lw=2)
-t = plt.text(13.7985, 51.0405, "Driving Direction", ha="center", va="center", rotation=-35,
+t = plt.text(13.7955, 51.04085, "Driving Direction", ha="center", va="center", rotation=-28,
             size=12,
             bbox=bbox_props)
 
 plt.xlabel('Longitude [$^\circ$]')
 plt.ylabel('Latitude [$^\circ$]')
-plt.title('Position of EKF state $x_k$, GNSS measurements and uncertainty $R$ (color)')
+#plt.title('Position of EKF state $x_k$, GNSS measurements and uncertainty $R$ (color)')
 plt.legend(loc='best')
 #plt.axis('equal')
 #plt.tight_layout()
 
+plt.xlim(13.7934, 13.7965)
+
+
 # xticks
 locs,labels = plt.xticks()
-plt.xticks(locs, map(lambda x: "%.3f" % x, locs))
+plt.xticks(locs, map(lambda x: "%.4f" % x, locs))
 
 # ytikcs
 locs,labels = plt.yticks()
@@ -1248,4 +1229,6 @@ print('Exported KMZ File for Google Earth')
 # <markdowncell>
 
 # Works just fine!
+# 
+# <img style="float: right" src="http://ragefaces.s3.amazonaws.com/4cd57c0f873a3d1965122d749a539e98.png" />
 
