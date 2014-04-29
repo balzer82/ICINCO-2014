@@ -21,8 +21,8 @@ dt = 0.1     # Timestep s
 # <codecell>
 
 def move(x,v,a,dt):
-    v = v + a*dt
     x = x + v*dt + 0.5*a*dt**2
+    v = v + a*dt
     y = 0.0
     return x,y,v
 
@@ -184,6 +184,9 @@ plt.savefig('Testdata-EPE.eps', bbox_inches='tight')
 with open('testdata.csv', 'wb') as thefile:
     for i in range(len(xout)):
        thefile.write("%.6f,%.6f,%.6f,%.6f,%.6f,%.6f,%.6f\n" % (xout[i], yout[i], 3.6*vout[i], -aout[i], GNSSxout[i], GNSSyout[i], epeout[i]))
+
+# <codecell>
+
 
 # <codecell>
 

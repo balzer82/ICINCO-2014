@@ -603,9 +603,9 @@ With $\text{HDOP}$ as the Horizontal Delution of Precision and $\text{URA}$ as t
 
 \section{Extended Kalman Filter for CTRV dynamic with Attitude Estimation}
 
-The implemented EKF estimates following state vector $x_k$, which is well known as the constant turn rate and velocity (CTRV) vehicle model + roll and pitch estimation:
+The implemented EKF estimates following state vector $x_k$, which is well known as the constant turn rate and velocity (CTRV) vehicle model plus additionally roll and pitch estimation:
 
-\begin{equation}x_k= \left[ \begin{matrix}x \\ y \\ \psi \\ v \\ \dot \psi \\ \phi \\ \dot \phi \\ \Theta \\ \dot \Theta \end{matrix} \right] = \left[ \begin{matrix} \text{Position X (GNSS)} \\ \text{Position Y (GNSS)} \\ \text{Heading (GNSS)} \\ \text{Speed (GNSS)} \\ \text{Yaw Rate (IMU)} \\ \text{Pitch (IMU)} \\ \text{Pitchrate (IMU)} \\ \text{Roll (IMU)} \\ \text{Rollrate (IMU)} \end{matrix} \right]\end{equation}
+\begin{equation}\label{state}x_k= \left[ \begin{matrix} x\\y\\ v \\ \psi\\\phi\\\Theta \end{matrix}\right] = \left[ \begin{matrix} \text{Position x (GNSS)}\\ \text{Position y (GNSS)}\\ \text{Speed (GNSS)} \\ \text{Heading (GNSS)} \\ \text{Pitch (IMU)} \\ \text{Roll (IMU)} \end{matrix}\right]\end{equation}
 
 As Schubert et. al. determined in \cite{Schubert2011}, "for ego motion estimation purposes which are characterized by a high update rate and the observability of $v$ and $\dot \psi$, model complexities beyond CTRV do not appear to be beneficial. However, the CTRV model shows its advantages as soon as a heading estimate is required."
 The coordinate system is defined as shown in Fig.  \ref{KOS}.
@@ -625,7 +625,7 @@ As mentioned there, the filter only estimates the correct attitude, if no extern
 
 Madgwick recommended to adaptively choose convergence parameters, depending on absolute acceleration, influencing the IMU.
 
-This paper lives this recommendation up and introduces an adaptively chosen weighting of roll and pitch angle and roll-/pitchrate, depending on the accelerations in x- or y-direction.
+This paper lives this recommendation up and introduces an adaptively chosen weighting of roll and pitch angle, depending on the accelerations in lateral or longitudinal direction.
 
 The roll and pitch angles, in vehicle coordinate system, are calculated with the quaternion ($Z_D=a-b\mathrm{i}_1-c\mathrm{i}_2-d\mathrm{i}_3$) output of the orientation filter \cite{Buchholz2013}.
 
@@ -654,21 +654,23 @@ With these equations the distance moved between two GNSS measurements can be cal
 
 \subsection{State Control}
 
-The rollrate $\dot \Theta$, the pitchrate $\dot \phi$, the yawrate $\dot \psi$ as well as the speed $v$ are state control variables.
+The longitudinal acceleration $a_x$, rollrate $\dot \Theta$, pitchrate $\dot \phi$ and the yawrate $\dot \psi$ are state control variables.
 
-\begin{equation}\label{controlinput}u_k=\left[\begin{matrix}v & \dot\psi & \dot\phi & \dot\Theta\end{matrix}\right]^T\end{equation}
+\begin{equation}\label{controlinput}u_k=\left[\begin{matrix}a_x & \dot\psi & \dot\phi & \dot\Theta \end{matrix}\right]^T\end{equation}
 
-The vector $u$ drives the state from one timestep $k$ to the next one.
+They are acquired by the IMU. The proposed filter could be used without any physical connection to the vehicle sensors (e.g. CAN-Bus) and therefore it is useful for mobile measurement systems. The state control vector $u$ consists only of values, acquired by the IMU, so the filter can run with high update rate in dead reckoning mode without GNSS information and the measurements from GNSS are used with lower update rate as correction.
 
 \subsection{State Transition Function}
 
 The state transition function $g(x_k, u_k)$ is defined with
 \begin{equation}\label{statetransitionfunction}
-x_{k+1}=\left[\begin{matrix}x + \frac{v}{\dot\psi} \left(- \sin{\left (\psi \right )} + \sin{\left (T \dot\psi + \psi \right )}\right)\\y + \frac{v}{\dot\psi} \left(\cos{\left (\psi \right )} - \cos{\left (T \dot\psi + \psi \right )}\right)\\T \dot\psi + \psi\\v\\\dot\psi\\T \dot\phi + \phi\\\dot\phi\\T \dot\Theta + \Theta\\\dot\Theta\end{matrix}\right]
+x_{k+1}=\left[\begin{matrix}x + \frac{v}{\dot\psi} \left(- \sin{\left (\psi \right )} + \sin{\left (T \dot\psi + \psi \right )}\right)\\y + \frac{v}{\dot\psi} \left(\cos{\left (\psi \right )} - \cos{\left (T \dot\psi + \psi \right )}\right)\\T a_{x} + v\\T \dot\psi + \psi\\T \dot\phi + \phi\\T \dot\Theta + \Theta\end{matrix}\right]
 \end{equation}
+
 for $\dot \psi \neq 0$. For straight driving without curvature, the state transition function is
+
 \begin{equation}
-x_{k+1}=\left[\begin{matrix}x + v T \cdot \cos(\psi)\\y + v T \cdot \sin(\psi)\\ \psi \\v\\\ 0 \\T \dot\phi + \phi\\\dot\phi\\T \dot\Theta + \Theta\\\dot\Theta\end{matrix}\right]
+x_{k+1}=\left[\begin{matrix}x + vT \left(\cos(\psi)\right)\\y + vT \left(\sin (\psi) \right) \\ T a_{x} + v\\\psi \\T \dot\phi + \phi\\T \dot\Theta + \Theta\end{matrix}\right]
 \end{equation}
 
 with $T$ as the time between two filtersteps. The Jacobians of the state transition with respect to the state and w.r.t. the control are listed in appendix.
@@ -677,13 +679,15 @@ with $T$ as the time between two filtersteps. The Jacobians of the state transit
 
 As Kelly in \cite{Kelly1994} pointed out "a Kalman filter is a mathematical idealization that happens to be useful in practice. However, it is important to note that there is a big difference between an optimal estimate and an accurate estimate. In practical use, the uncertainty estimates take on the significance of relative weights of state estimates and measurements. So it is not so much important that uncertainty is absolutely correct as it is that it be relatively consistent across all models."
 
-\begin{equation}Q=diag\label{Q}\left[\begin{matrix}\sigma_{v}^2 & \sigma_{{\dot\psi}}^2 & \sigma_{{\dot\phi}}^2 & \sigma_{{\dot\Theta}}^2 \end{matrix}\right]\end{equation}
+\begin{equation}Q=diag\label{Q}\left[\begin{matrix}\sigma_{a}^2 & \sigma_{{\dot\psi}}^2 & \sigma_{{\dot\phi}}^2 & \sigma_{{\dot\Theta}}^2 \end{matrix}\right]\end{equation}
 
 Cross covariances resulting from deviation moments are assumed to be zero.
 
-Assumptions for process noises for yawrate and velocity for a vehicle model are suggested in \cite{Kelly1994}. The process noise is best described with the question, how much the state can be propagated in one timestep by expected movement of the vehicle. So the maximal acceleration expected for a car might be $\SI{5}{\metre\per\square\second}$ under normal circumstances, so the $\sigma_v \approx a_\text{max}\cdot T$.
-A typical maximal angular acceleration around vehicle z-axis might be $\SI{55}{\degree\per\square\second}$, which leads to a process noise of $\sigma_{\dot\psi} \approx \SI{55}{\degree\per\square\second} \cdot \frac{\pi}{180{,}0} \cdot T$.
-The rotation around the pitch axis is much more dynamical, with typical angular accelerations of $\SI{200}{\degree\per\square\second}$. The rotation around the roll axis is in between and is assumed to be $\SI{130}{\degree\per\square\second}$.
+Assumptions for process noises for a vehicle model are suggested in \cite{Kelly1994}. The process noise is best described with the question, how much the state can be propagated in one timestep by expected movement of the vehicle. So the jerk expected for a car might be $\SI{300}{\metre\per\cubic\second}$ under normal circumstances, so the $\sigma_a \approx \dot a_\text{max}\cdot T$.
+
+A typical maximal angular acceleration around vehicle z-axis might be $\SI{80}{\degree\per\square\second}$, which leads to a process noise of $\sigma_{\dot\psi} \approx \SI{80}{\degree\per\square\second} \cdot \frac{\pi}{180{,}0} \cdot T$.
+The rotation around the pitch axis is much more dynamically, with typical angular accelerations of $\SI{200}{\degree\per\square\second}$ because of bumps and road surface quality. The angular acceleration around the roll axis is assumed to be $\SI{200}{\degree\per\square\second}$, too.
+
 The process noises for a $\SI{50}{\hertz}$ filter are listed in Table \ref{processnoisetable}.
 
 \begin{table}[ht]
@@ -700,31 +704,31 @@ The process noises for a $\SI{50}{\hertz}$ filter are listed in Table \ref{proce
 \hline
 Parameter & Decribtion & Value\\
 \hline
-$\sigma_v$ & Velocity Process Noise & \SI{0.1}{\metre\per\second} \\
-$\sigma_{\dot \psi}$ & Yawrate Process Noise & \SI{0.019}{\radian\per\second}\\
-$\sigma_{\dot \phi}$ & Pitchrate Process Noise & \SI{0.07}{\radian\per\second}\\
-$\sigma_{\dot \Theta}$ & Rollrate Process Noise & \SI{0.045}{\radian\per\second}\\
+$\sigma_a$ & Acceleration Process Noise & \SI{6.0}{\metre\per\square\second} \\
+$\sigma_{\dot \psi}$ & Yawrate Process Noise & \SI{0.028}{\radian\per\second}\\
+$\sigma_{\dot \phi}$ & Pitchrate Process Noise & \SI{0.070}{\radian\per\second}\\
+$\sigma_{\dot \Theta}$ & Rollrate Process Noise & \SI{0.070}{\radian\per\second}\\
 \hline
 \end{tabular}
 \end{table}
 
 \subsection{Measurement Noise Covariance R}
 
-Because the estimation of roll \eqref{rollangle} and pitch \eqref{pitchangle} is only valid for quasistatic situations (which is acutally not valid for a moving vehicle), the standard deviation for the calculated attitude angles $\sigma_r$ are adaptive to the accelerations $a_x$ and $a_y$.
+The attitude estimation of the IMU filter \cite{Madgwick2010}, which is used as measurement for roll \eqref{rollangle} and pitch \eqref{pitchangle}, is only valid for quasistatic situations (which is acutally not valid for a moving vehicle), the standard deviation for the calculated attitude angles are adaptive to the accelerations $a_x$ for pitch and $a_y$ for roll.
 
-The novel approach, presented in this paper, is the very easy to implement and fast to calculate weighting of the measurement noise covariance matrix $R$.
+The novel approach, presented in this paper, is the very easy to implement and fast to calculate elements of the measurement noise covariance matrix $R$.
 
-\begin{equation}\label{R}R=diag\left[\begin{matrix}\sigma_{x}^2 & \sigma_{y}^2 & \sigma_{\phi}^2 & \sigma_{\Theta}^2 \end{matrix}\right]\end{equation}
+\begin{equation}\label{R}R=diag\left[\begin{matrix}\sigma_{x}^2 & \sigma_{y}^2 & \sigma_{v}^2 & \sigma_{\psi}^2 & \sigma_{\phi}^2 & \sigma_{\Theta}^2 \end{matrix}\right]\end{equation}
 
-\subsubsection{Position Measurement Uncertainty}
+\subsubsection{Position Measurement Uncertainties}
 
 In every EKF filterstep, the standard deviations for $\sigma_x$ and $\sigma_y$ are calculated, depending on the speed and additionally depending on the estimated position error ($EPE$), which is provided by the GNSS modul itself.
-\begin{equation}\sigma_x^2 = \sigma_y^2 = \sigma_\text{v}^2 + \sigma_\text{EPE}^2\end{equation}
+\begin{equation}\sigma_x^2 = \sigma_y^2 = c \cdot \sigma_\text{v}^2 + \sigma_\text{EPE}^2\end{equation}
 with
 \begin{equation}\label{sigmav}\sigma_v = (v+\epsilon)^{-\xi}\end{equation}
 \begin{equation}\label{sigmaepe}\sigma_\text{EPE} = \zeta \cdot EPE\end{equation}
 
-The variables $\epsilon$, $\xi$ and $\zeta$ are tuneable parameters.
+The variables $\epsilon$, $\xi$ and $\zeta$ are tuneable parameters. Factor $c=s^2$ for unit correction.
 
 \subsubsection{Attitude Measurement Uncertainty}
 
@@ -739,15 +743,14 @@ The variables $\rho$ and $\gamma$ are tuneable parameters.
 \subsection{Measurement Function h}
 
 Because of the simplifications \eqref{deltax} and \eqref{deltay}, the Jacobian of the measurement function $h$ with respect to the state $x_k$ is simple and computationally fast with 
-\begin{equation}\label{hgps}J_H=\left[\begin{matrix}1 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 1 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0\end{matrix}\right]\end{equation}
-when a new GNSS position measurement is available. In the practical implementation, the GNSS provide position information with \SI{10.0}{\hertz} and the EKF is estimating with \SI{50.0}{\hertz}. If no GNSS position information is available, the Jacobian of the measurement function $h$ with respect to the state $x_k$ is
-\begin{equation}J_H=\left[\begin{matrix}0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 1 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & 0\end{matrix}\right]\end{equation}
+\begin{equation}\label{hgps}J_H=diag\left[\begin{matrix}1 & 1 & 1 & 1 & 1 &1\end{matrix}\right]\end{equation}
+when a new GNSS position measurement is available. In the practical implementation, the GNSS provide position information with \SI{10.0}{\hertz} and the EKF is estimating with \SI{50.0}{\hertz} (IMU measurement frequency). If no GNSS position information is available, the correspondig elements in $J_H$ are zero.
 
 \section{Simulation}
 
 \subsection{Simulation Setup}
 
-To evaluate the adaptive EKF, a typical urban scenario, with shading from a buildings, as well as a vehicle stop, was simulated (see Fig. \ref{Testdata}).
+To evaluate the adaptive EKF, a typical urban scenario, with shading from a building, as well as a vehicle stop, was simulated (see Fig. \ref{Testdata}).
 
 \begin{figure}[ht]
 \centering
@@ -756,7 +759,7 @@ To evaluate the adaptive EKF, a typical urban scenario, with shading from a buil
 \label{Testdata}
 \end{figure}
 
-The car starts at $x=0$, $y=0$ with $v=\SI{50.0}{\kilo\metre\per\hour}$ and decelerates until it stops. It is standing for $\SI{20}{\second}$ and accelerating until it reaches $v=\SI{50.0}{\kilo\metre\per\hour}$ again. Then it is passing a building, which disrupts the signal quality of the GNSS, so the position measurement is changed by $+\SI{15}{\metre}$ in $y$-direction, the $EPE$ is raised as well.
+The car starts at $x=0$, $y=0$ with $v=\SI{50.0}{\kilo\metre\per\hour}$ and decelerates until it stops. It is standing for $\SI{20}{\second}$ and accelerating until it reaches $v=\SI{50.0}{\kilo\metre\per\hour}$ again. Then it is passing a building, which corrupts the signal quality of the GNSS, and the position measurement is disrupted by $+\SI{15}{\metre}$ in $y$-direction.
 
 \begin{figure}[ht]
 \centering
@@ -767,7 +770,7 @@ The car starts at $x=0$, $y=0$ with $v=\SI{50.0}{\kilo\metre\per\hour}$ and dece
 
 \subsection{Parameter for Adaptive R}
 
-The summand $\epsilon$ for \eqref{sigmav} is initialized with $\SI{1.0}{\metre\per\second}$, the exponent $\xi$ for \eqref{sigmav} with $500{,}0$ and the factor $\zeta$ for \eqref{sigmaepe} with $50{,}0$. The resulting values for $\sigma_x^2$ and $\sigma_y^2$ for a range of velocities and $EPE$s are shown in Fig. \ref{R1}.
+The summand $\epsilon$ for \eqref{sigmav} is initialized with $\SI{0.1}{\metre\per\second}$, the exponent $\xi$ for \eqref{sigmav} with $500{,}0$ and the factor $\zeta$ for \eqref{sigmaepe} with $50{,}0$. The resulting values for $\sigma_x^2$ and $\sigma_y^2$ for a range of velocities and $EPE$s are shown in Fig. \ref{R1}.
 
 \begin{figure}[ht]
 \centering
@@ -778,11 +781,11 @@ The summand $\epsilon$ for \eqref{sigmav} is initialized with $\SI{1.0}{\metre\p
 
 The factor $\rho$ for \eqref{sigmaroll} was initialized with $200{,}0$, the summand $\gamma$ was chosen to be $500{,}0$.
 
-These parameters are empirically chosen and are subject to change for different cars or other driving scenarios or street quality.
+These parameters are empirically chosen and are subject to change for different cars or other driving scenarios or street qualities.
 
 \subsection{Simulation Results}
 
-As one can see in Fig. \ref{CTRV-Position-Testdata}, the filter follows the trajectory of the GNSS measurements. If the EPE raises, the filter is more willing to trust the control input (see \eqref{controlinput}) instead of the position measurements.
+As one can see in Fig. \ref{CTRV-Position-Testdata}, the filter follows the trajectory of the GNSS measurements. If the $EPE$ raises, the filter is more willing to trust the control input instead of the position measurements.
 
 \begin{figure}[ht]
 \centering
@@ -796,20 +799,13 @@ To quantify the filter performance with respect to ground truth (GT) trajectory,
 \begin{equation}\text{CTE}_x=x_{GT}-x\end{equation}
 \begin{equation}\text{CTE}_y=y_{GT}-y\end{equation}
 
-The sum of the square of the CTE for the simulation is a value to quantify the filter performance with respect to the correct trajectory estimation (see Fig. \ref{CTRV-CTE-Testdata}).
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=3.5in]{images/Extended-Kalman-Filter-CTRV-CTE-Testdata}
-\caption{Cross-Track-Error (not position estimate) with sum of the square}
-\label{CTRV-CTE-Testdata}
-\end{figure}
+The sum of the square of the CTE over the whole dataset is a value to quantify the filter performance with respect to the correct trajectory estimation.
 
 \subsection{Comparison to Standard EKF}
 
 To compare the estimated trajectory with a non-adaptive EKF, the estimation was performed with several datasets for GNSS position measurements, generated by random Gaussian noise around the ground truth position.
 
-The standard EKF was set up with static $\sigma_x^2=\SI{36}{\square\metre}$ and $\sigma_y^2=\SI{36}{\square\metre}$ values. The result is shown in Fig.  \ref{Boxplot}.
+The standard EKF was set up with static $\sigma_x^2=\SI{144}{\square\metre}$, $\sigma_y^2=\SI{144}{\square\metre}$ values. The result is shown in Fig.  \ref{Boxplot}.
 
 \begin{figure}[ht]
 \centering
@@ -818,22 +814,30 @@ The standard EKF was set up with static $\sigma_x^2=\SI{36}{\square\metre}$ and 
 \label{Boxplot}
 \end{figure}
 
-In comparison, the adaptive EKF reduces the $\Sigma \text{CTE}_x^2$ by $\SI{47}{\percent}$, the $\Sigma \text{CTE}_y^2$ by $\SI{59}{\percent}$, which for sure depends on the driving direction as well as on the chosen parameters.
+In comparison, the adaptive EKF reduces the $\Sigma \text{CTE}_{x,y}^2$ by around $\SI{80}{\percent}$, which for sure depends on the driving direction as well as on the chosen parameters.
 
 Note, that the standard EKF could set up with high values for $R$ as well and may have better CTE values, but then, like for all filters, the dynamic is getting lost.
 
 \section{Experimental Setup}
 
-To test the performance of the filter with real GNSS data as well as a real car, the following sensores were used: LSM303   3-axis accelerometer and 3-axis magnetometer, ITG-3200 3-axis gyro, PA6H GNSS receiver. The sensors are available with the Tinkerforge IMU Brick\footnote{\url{http://www.tinkerforge.com/en/doc/Hardware/Bricks/IMU_Brick.html}} and GPS Bricklet\footnote{\url{http://www.tinkerforge.com/en/doc/Hardware/Bricklets/GPS.html}}.
+\subsection{Low Cost Sensors}
 
-For vehicle speed lower than $\SI{1,0}{\kilo\metre\per\hour}$ (GNSS), the speed and yawrate are set to zero, because the Doppler effect doesn't work for speed estimation in the GNSS receiver and turning while standing still is very unlikely.
+The measurement and control data of the filter were logged by a LSM303 3-axis accelerometer and 3-axis magnetometer, ITG-3200 3-axis gyro and PA6H GNSS receiver. The sensors are available with the Tinkerforge IMU Brick\footnote{\url{http://www.tinkerforge.com/en/doc/Hardware/Bricks/IMU_Brick.html}} and GPS Bricklet\footnote{\url{http://www.tinkerforge.com/en/doc/Hardware/Bricklets/GPS.html}}.
+
+All sensors are mobile, so no connection to the car is neccessary, but could improve the estimation.
+
+\subsection{Ground Truth GNSS Sensor}
+
+The ground truth was logged with a multifrequency aerial antenna (JAVAD GrAnt-G3T) and -receiver (JAVAD Delta), corrected with a virtual reference station (VRS) and Satellite Positioning Service of the German State Survey (SAPOS) data via GPRS modem (come2ascos GenPro).
 
 \section{Experimental Results}
+
+
 
 \begin{figure}[h!]
 \centering
 \includegraphics[width=3.4in]{images/Extended-Kalman-Filter-CTRV-Position}
-\caption{Performed test drive with adaptive values of measurement uncertainty values for matrix $R$ (color)}
+\caption{Performed test drive with adaptive values of measurement uncertainty values for matrix $R$. (GNSS measurement dots are reduced to every 10th for better visualisation in this figure)}
 \label{ctrv-position}
 \end{figure}
 
@@ -846,21 +850,18 @@ The state variables $x_k$ for the scenario were estimated as shown in Fig. \ref{
 \label{ctrv-states}
 \end{figure}
 
-As one can see, the stop before the last left turn got a high position measurement uncertainty, which in detail is shown in figure \ref{ctrv-position-detail}.
+As one can see, the stop before the right turn got a high position measurement uncertainty, which in detail is shown in figure \ref{ctrv-position-detail}.
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=3.2in]{images/Extended-Kalman-Filter-CTRV-Position-Detail}
-\caption{Stop within the performed test drive with raised uncertainty for $R$ and position estimation from adaptive EKF}
+\caption{Detailed view of the stop within the performed test drive with raised uncertainty for $R$. (GNSS measurement dots are reduced to every 10th for better visualisation in this figure)}
 \label{ctrv-position-detail}
 \end{figure}
 
+While standing still, the heading measurement of the GNSS receiver is inaccurate (see Fig. \ref{ctrv-states} between filter step $k\approx2200\dotsc2400$). The filter performes very well on this situation and keeps the heading in the correct direction. The EKF position estimation (see Fig. \ref{ctrv-position-detail}) is not disturbed by inaccurate GNSS measurements while standing still and is dynamically responsive while cornering. The low cost GNSS equipment with the proposed adaptive Extended Kalman Filter delivers a robust position estimation, which alignes with the ground truth measurement. 
 
-The state variables for vehicle speed and yawrate are nearly perfectly aligned, because they fit very well and they are state control variables as well. The state is forced to follow them.
-
-While standing still, the heading measurement of the GNSS receiver is inaccurate (see Fig. \ref{ctrv-states} between filter step $k\approx600\dotsc700$). The filter performes very well on this situation and keeps the heading in the correct direction. The EKF position estimation (see Fig. \ref{ctrv-position-detail}) is not disturbed by inaccurate GNSS measurements while standing still and is dynamically responsive while driving. 
-
-For the conducted test drive, the values for the measurement uncertainties in $R$ are calculated like shown in figure \ref{adaptive-R}.
+The values for the measurement uncertainties in $R$ are calculated like shown in figure \ref{adaptive-R}.
 
 \begin{figure}[ht]
 \centering
@@ -964,7 +965,7 @@ In this paper we presented a novel approach to adaptively calculate the measurem
 We explained the basics and used some empirically chosen values to parametrize the filter. With that, we showed with simulated data, that the filter performes significantly better than a standard Extended Kalman Filter. Based on that, we conducted test drives and used the developed Adaptive EKF for a real world dataset, which proved its ability to improve the position estimation with partly bad signal quality. In addition to that, the filter also performs pretty well on dynamic situations and is not loosing the ability to follow dynamic vehicle movements.
 The filter cannot be used to get rid of bias in position estimation, because the EPE from GNSS has, by definition, no information about static drift of the position information.
 The presented filter can be used to get significantly better results while standing still or driving slowly as well as keeping the heading fixed while do so.
-Additionally, the attitude of the vehicle is estimated, based on the filter presented in \cite{Madgwick2010} in rest position and with angular velocity sensors from IMU while driving.
+Additionally, the attitude of the vehicle is estimated, based on the filter presented in \cite{Madgwick2010}.
 
 % if have a single appendix:
 %\appendix[Proof of the Zonklar Equations]
@@ -983,39 +984,43 @@ Additionally, the attitude of the vehicle is estimated, based on the filter pres
 % use section* for acknowledgement
 \section*{Acknowledgment}
 
-%The authors would like to thank the Free State of Saxony and the European Union, which funded the research from the ESF fond.
-T.b.d.
+The authors would like to thank the Free State of Saxony and the European Union, which funded this research from the ESF fond.
+%T.b.d.
 
 \appendices
 \section{Programm Code and EKF Implementation}
-The implemenented EKF code as well as all figures and the data used in this paper can be found online at t.b.d %\url{http://balzer82.github.com/MMAR14}
+The implemenented EKF code as well as all figures and the data used in this paper can be found online at ... %\url{http://balzer82.github.com/MMAR14}
 
 \section{Jacobians}
 
 The Jacobian of the state transition \eqref{statetransitionfunction} function with respect to the state $x_k$ is defined with
 
-\begin{equation}
-J_A=\left[\begin{matrix}1 & 0 & J_{A,13} & J_{A,14} & J_{A,15} & 0 & 0 & 0 & 0\\0 & 1 & J_{A,23} & J_{A,24} & J_{A,25} & 0 & 0 & 0 & 0\\0 & 0 & 1 & 0 & T & 0 & 0 & 0 & 0\\0 & 0 & 0 & 1 & 0 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 1 & 0 & 0 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 1 & T & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 1 & 0 & 0\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 1 & T\\0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 1\end{matrix}\right]
-\end{equation}
+\begin{equation}\left[\begin{matrix}1 & 0 & J_{A,13} & J_{A,14} & 0 & 0\\0 & 1 & J_{A,23} & J_{A,24} & 0 & 0\\0 & 0 & 1 & 0 & 0 & 0\\0 & 0 & 0 & 1 & 0 & 0\\0 & 0 & 0 & 0 & 1 & 0\\0 & 0 & 0 & 0 & 0 & 1\end{matrix}\right]\end{equation}
 
 with
 
-\begin{equation}J_{A,13}=\frac{v}{\dot\psi} \left(- \cos{\left (\psi \right )} + \cos{\left (T \dot\psi + \psi \right )}\right)\end{equation}
-\begin{equation}J_{A,14}=\frac{1}{\dot\psi} \left(- \sin{\left (\psi \right )} + \sin{\left (T \dot\psi + \psi \right )}\right)\end{equation}
-\begin{equation}J_{A,15}=\frac{T v}{\dot\psi} \cos{\left (T \dot\psi + \psi \right )} - \frac{v}{\dot\psi} \cdot J_{A,14}\end{equation}
-\begin{equation}J_{A,23}=\frac{v}{\dot\psi} \left(- \sin{\left (\psi \right )} + \sin{\left (T \dot\psi + \psi \right )}\right)\end{equation}
-\begin{equation}J_{A,24}=\frac{1}{\dot\psi} \left(\cos{\left (\psi \right )} - \cos{\left (T \dot\psi + \psi \right )}\right)\end{equation}
-\begin{equation}J_{A,25}=\frac{T v}{\dot\psi} \sin{\left (T \dot\psi + \psi \right )} - \frac{v}{\dot\psi}\cdot J_{A,24}\end{equation}
+\begin{equation}J_{A,13}=\frac{1}{\dot\psi} \left(- \sin{\left (\psi \right )} + \sin{\left (T \dot\psi + \psi \right )}\right)\end{equation}
+\begin{equation}J_{A,14}=\frac{v}{\dot\psi} \left(- \cos{\left (\psi \right )} + \cos{\left (T \dot\psi + \psi \right )}\right)\end{equation}
+\begin{equation}J_{A,23}=\frac{1}{\dot\psi} \left(\cos{\left (\psi \right )} - \cos{\left (T \dot\psi + \psi \right )}\right)\end{equation}
+\begin{equation}J_{A,24}=\frac{v}{\dot\psi} \left(- \sin{\left (\psi \right )} + \sin{\left (T \dot\psi + \psi \right )}\right)\end{equation}
 
 The Jacobian of the state transition function with respect to the control is
 
-\begin{equation}J_G=\left[\begin{matrix}J_{G,11} & J_{G,12} & 0 & 0\\ J_{G,21} & J_{G,22} & 0 & 0\\0 & T & 0 & 0\\1 & 0 & 0 & 0\\0 & 1 & 0 & 0\\0 & 0 & T & 0\\0 & 0 & 1 & 0\\0 & 0 & 0 & T\\0 & 0 & 0 & 1\end{matrix}\right]\end{equation}
-with
-\begin{equation}J_{G,11}=\frac{1}{\dot\psi} \left(- \sin{\left (\psi \right )} + \sin{\left (T \dot\psi + \psi \right )}\right)\end{equation}
-\begin{equation}J_{G,12}=\frac{T v}{\dot\psi} \cos{\left (T \dot\psi + \psi \right )} - \frac{v}{\dot\psi} \cdot J_{G,11}\end{equation}
-\begin{equation}J_{G,21}=\frac{1}{\dot\psi} \left(\cos{\left (\psi \right )} - \cos{\left (T \dot\psi + \psi \right )}\right)\end{equation}
-\begin{equation}J_{G,22}=\frac{T v}{\dot\psi} \sin{\left (T \dot\psi + \psi \right )} - \frac{v}{\dot\psi} \cdot J_{G,21}\end{equation}
+\begin{equation}J_G=\left[\begin{matrix}0 & J_{G,12} & 0 & 0\\0 & J_{G,22} & 0 & 0\\T & 0 & 0 & 0\\0 & T & 0 & 0\\0 & 0 & T & 0\\0 & 0 & 0 & T\end{matrix}\right]\end{equation}
 
+with
+
+\begin{equation}
+	\begin{split}
+    	J_{G,12}=\frac{T v}{\dot\psi} \cos{\left (T \dot\psi + \psi \right )} - \\ 		\frac{v}{\dot\psi^{2}} \left(- \sin{\left (\psi \right )} + \sin{\left (T \dot\psi + \psi \right )}\right)
+	\end{split}
+\end{equation}
+
+\begin{equation}
+	\begin{split}
+    	J_{G,22}=\frac{T v}{\dot\psi} \sin{\left (T \dot\psi + \psi \right )} - \\ \frac{v}{\dot\psi^{2}} \left(\cos{\left (\psi \right )} - \cos{\left (T \dot\psi + \psi \right )}\right)
+    \end{split}
+\end{equation}
 
 % you can choose not to have a title for an appendix
 % if you want by leaving the argument blank

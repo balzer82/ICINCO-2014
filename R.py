@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 
 # <markdowncell>
 
-# $\sigma_p^2 = \sigma_\text{speed}^2 + \sigma_\text{EPE}^2$
+# $\sigma_p^2 = c \cdot \sigma_\text{speed}^2 + \sigma_\text{EPE}^2$
 # 
 # $\sigma_v = (v+\epsilon)^{-\xi}$
 # 
@@ -52,7 +52,7 @@ cbar.ax.set_ylabel(u'$\sigma_x^2$ and $\sigma_y^2$ values', rotation=270)
 cbar.ax.set_xlabel(u'')
 
 tstr = r'$R$ with $\epsilon=$ %.2f, $\xi=$ %.2f, $\zeta=$ %.2f' % (epsilon, xi, zeta)
-plt.title(tstr)
+plt.title(tstr, size=12)
 plt.xlabel('speed $v$ in $m/s$')
 plt.ylabel('$EPE$ in $m$')
 
