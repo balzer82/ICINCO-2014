@@ -204,6 +204,10 @@ course =(-course+90.0)
 gpsheatmap = ImageDisp(filename='2014-04-23-GPS-IMU-Data-Heatmap.png')
 gpsheatmap
 
+# <markdowncell>
+
+# Map tiles by [Stamen Design](http://stamen.com/), under [CC BY 3.0](http://creativecommons.org/licenses/by/3.0/). Data by [OpenStreetMap](http://www.openstreetmap.org/), under [CC BY SA](http://creativecommons.org/licenses/by-sa/3.0/).
+
 # <headingcell level=2>
 
 # Real Measurements from GNSS Hardware as Ground Truth
@@ -215,10 +219,6 @@ datafile = '2014-04-23-GNSSGroundTruth.csv'
 LatDD, LonDD = np.loadtxt(datafile, delimiter=',', unpack=True, skiprows=1)
 
 print('Read \'%s\' successfully.' % datafile)
-
-# <markdowncell>
-
-# Map tiles by [Stamen Design](http://stamen.com/), under [CC BY 3.0](http://creativecommons.org/licenses/by/3.0/). Data by [OpenStreetMap](http://www.openstreetmap.org/), under [CC BY SA](http://creativecommons.org/licenses/by-sa/3.0/).
 
 # <headingcell level=2>
 
@@ -439,7 +439,7 @@ plt.tight_layout()
 
 plt.figure(figsize=(16,3))
 plt.plot(epe, label='$EPE$ from GNSS modul', marker='*', markevery=50)
-plt.plot(speed)
+#plt.plot(speed)
 plt.ylabel('$EPE$ in $(m)$')
 plt.xlabel('Filterstep $k$')
 plt.xlim(0,6000)
@@ -453,8 +453,8 @@ plt.savefig('Extended-Kalman-Filter-CTRV-EPE.eps', bbox_inches='tight')
 
 # <codecell>
 
-RadiusEarth = 6378388.0 # m
-arc= 2.0*np.pi*RadiusEarth/360.0 # m/°
+R = 6378388.0 + altitude # m
+arc= 2.0*np.pi*R/360.0 # m/°
 
 dx = arc * np.cos(latitude*np.pi/180.0) * np.hstack((0.0, np.diff(longitude))) # in m
 dy = arc * np.hstack((0.0, np.diff(latitude))) # in m
@@ -468,6 +468,7 @@ GPS=np.hstack((True, (np.diff(ds)>0.0).astype('bool'))) # GPS Trigger for Kalman
 
 # <codecell>
 
+print('One degree of Lon is %.2fkm at %.1fm altitude.' % (arc[0]/1000.0, altitude[0]))
 
 # <headingcell level=2>
 
@@ -619,8 +620,9 @@ hs = Matrix([[xs],[ys],[vs],[psis],[phis],[thetas]])
 Hs=hs.jacobian(state)
 Hs
 
-# <codecell>
+# <markdowncell>
 
+# Else set the elements to zero.
 
 # <headingcell level=3>
 

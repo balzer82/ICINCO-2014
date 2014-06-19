@@ -1,248 +1,17 @@
-%\title{ICINCO '14: Adaptive Extended Kalman Filter for Vehicle Attitude Estimation with Low Cost Sensors}
-%% bare_jrnl.tex
-%% V1.4
-%% 2012/12/27
-%% by Michael Shell
-%% see http://www.michaelshell.org/
-%% for current contact information.
-%%
-%% This is a skeleton file demonstrating the use of IEEEtran.cls
-%% (requires IEEEtran.cls version 1.8 or later) with an IEEE journal paper.
-%%
-%% Support sites:
-%% http://www.michaelshell.org/tex/ieeetran/
-%% http://www.ctan.org/tex-archive/macros/latex/contrib/IEEEtran/
-%% and
-%% http://www.ieee.org/
+\documentclass[a4paper,twoside]{article}
 
-
-
-% *** Authors should verify (and, if needed, correct) their LaTeX system  ***
-% *** with the testflow diagnostic prior to trusting their LaTeX platform ***
-% *** with production work. IEEE's font choices can trigger bugs that do  ***
-% *** not appear when using other class files.                            ***
-% The testflow support page is at:
-% http://www.michaelshell.org/tex/testflow/
-
-
-%%*************************************************************************
-%% Legal Notice:
-%% This code is offered as-is without any warranty either expressed or
-%% implied; without even the implied warranty of MERCHANTABILITY or
-%% FITNESS FOR A PARTICULAR PURPOSE! 
-%% User assumes all risk.
-%% In no event shall IEEE or any contributor to this code be liable for
-%% any damages or losses, including, but not limited to, incidental,
-%% consequential, or any other damages, resulting from the use or misuse
-%% of any information contained here.
-%%
-%% All comments are the opinions of their respective authors and are not
-%% necessarily endorsed by the IEEE.
-%%
-%% This work is distributed under the LaTeX Project Public License (LPPL)
-%% ( http://www.latex-project.org/ ) version 1.3, and may be freely used,
-%% distributed and modified. A copy of the LPPL, version 1.3, is included
-%% in the base LaTeX documentation of all distributions of LaTeX released
-%% 2003/12/01 or later.
-%% Retain all contribution notices and credits.
-%% ** Modified files should be clearly indicated as such, including  **
-%% ** renaming them and changing author support contact information. **
-%%
-%% File list of work: IEEEtran.cls, IEEEtran_HOWTO.pdf, bare_adv.tex,
-%%                    bare_conf.tex, bare_jrnl.tex, bare_jrnl_compsoc.tex,
-%%                    bare_jrnl_transmag.tex
-%%*************************************************************************
-
-% Note that the a4paper option is mainly intended so that authors in
-% countries using A4 can easily print to A4 and see how their papers will
-% look in print - the typesetting of the document will not typically be
-% affected with changes in paper size (but the bottom and side margins will).
-% Use the testflow package mentioned above to verify correct handling of
-% both paper sizes by the user's LaTeX system.
-%
-% Also note that the "draftcls" or "draftclsnofoot", not "draft", option
-% should be used if it is desired that the figures are to be displayed in
-% draft mode.
-%
-\documentclass[conference]{IEEEtran}
-%
-% If IEEEtran.cls has not been installed into the LaTeX system files,
-% manually specify the path to it like:
-% \documentclass[journal]{../sty/IEEEtran}
-
-% Some very useful LaTeX packages include:
-% (uncomment the ones you want to load)
-
-
-% *** MISC UTILITY PACKAGES ***
-%
-%\usepackage{ifpdf}
-% Heiko Oberdiek's ifpdf.sty is very useful if you need conditional
-% compilation based on whether the output is pdf or dvi.
-% usage:
-% \ifpdf
-%   % pdf code
-% \else
-%   % dvi code
-% \fi
-% The latest version of ifpdf.sty can be obtained from:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/oberdiek/
-% Also, note that IEEEtran.cls V1.7 and later provides a builtin
-% \ifCLASSINFOpdf conditional that works the same way.
-% When switching from latex to pdflatex and vice-versa, the compiler may
-% have to be run twice to clear warning/error messages.
-
-\usepackage[pdftex,
-            pdfauthor={tbd, tbd, tbd},
-            pdftitle={EPE and Speed Adaptive Extended Kalman Filter for Vehicle Position and Attitude Estimation with Low Cost GNSS and IMU Sensors},
-            pdfsubject={EPE and Speed Adaptive Extended Kalman Filter for Vehicle Position and Attitude Estimation with Low Cost GNSS and IMU Sensors},
-            pdfkeywords={Kalman, Adaptive, Extended, Filter},
-            pdfproducer={Latex with hyperref},
-            pdfcreator={writeLaTeX},
-            colorlinks=true,
-            linkcolor=black,
-            citecolor=black,
-            filecolor=black,
-            urlcolor=black,
-            bookmarks=true,
-            bookmarksopen=false,
-            bookmarksopenlevel=3,
-            plainpages=false,
-            pdfpagelabels=true]{hyperref}
-
-
-
-
-% *** CITATION PACKAGES ***
-%
-\usepackage{cite}
-% cite.sty was written by Donald Arseneau
-% V1.6 and later of IEEEtran pre-defines the format of the cite.sty package
-% \cite{} output to follow that of IEEE. Loading the cite package will
-% result in citation numbers being automatically sorted and properly
-% "compressed/ranged". e.g., [1], [9], [2], [7], [5], [6] without using
-% cite.sty will become [1], [2], [5]--[7], [9] using cite.sty. cite.sty's
-% \cite will automatically add leading space, if needed. Use cite.sty's
-% noadjust option (cite.sty V3.8 and later) if you want to turn this off
-% such as if a citation ever needs to be enclosed in parenthesis.
-% cite.sty is already installed on most LaTeX systems. Be sure and use
-% version 4.0 (2003-05-27) and later if using hyperref.sty. cite.sty does
-% not currently provide for hyperlinked citations.
-% The latest version can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/cite/
-% The documentation is contained in the cite.sty file itself.
-
-
-
-
-
-
-% *** GRAPHICS RELATED PACKAGES ***
-%
-\ifCLASSINFOpdf
-   \usepackage[pdftex]{graphicx}
-  % declare the path(s) where your graphic files are
-   \graphicspath{{../images/}{../pdf/}{../jpeg/}}
-  % and their extensions so you won't have to specify these with
-  % every instance of \includegraphics
-   \DeclareGraphicsExtensions{.pdf,.jpeg,.png}
-\else
-  % or other class option (dvipsone, dvipdf, if not using dvips). graphicx
-  % will default to the driver specified in the system graphics.cfg if no
-  % driver is specified.
-   \usepackage[dvips]{graphicx}
-  % declare the path(s) where your graphic files are
-   \graphicspath{{../images/}{../eps/}}
-  % and their extensions so you won't have to specify these with
-  % every instance of \includegraphics
-   \DeclareGraphicsExtensions{.eps}
-\fi
-% graphicx was written by David Carlisle and Sebastian Rahtz. It is
-% required if you want graphics, photos, etc. graphicx.sty is already
-% installed on most LaTeX systems. The latest version and documentation
-% can be obtained at: 
-% http://www.ctan.org/tex-archive/macros/latex/required/graphics/
-% Another good source of documentation is "Using Imported Graphics in
-% LaTeX2e" by Keith Reckdahl which can be found at:
-% http://www.ctan.org/tex-archive/info/epslatex/
-%
-% latex, and pdflatex in dvi mode, support graphics in encapsulated
-% postscript (.eps) format. pdflatex in pdf mode supports graphics
-% in .pdf, .jpeg, .png and .mps (metapost) formats. Users should ensure
-% that all non-photo figures use a vector format (.eps, .pdf, .mps) and
-% not a bitmapped formats (.jpeg, .png). IEEE frowns on bitmapped formats
-% which can result in "jaggedy"/blurry rendering of lines and letters as
-% well as large increases in file sizes.
-%
-% You can find documentation about the pdfTeX application at:
-% http://www.tug.org/applications/pdftex
-
-
-
-
-
-% *** MATH PACKAGES ***
-%
-\usepackage[cmex10]{amsmath}
-% A popular package from the American Mathematical Society that provides
-% many useful and powerful commands for dealing with mathematics. If using
-% it, be sure to load this package with the cmex10 option to ensure that
-% only type 1 fonts will utilized at all point sizes. Without this option,
-% it is possible that some math symbols, particularly those within
-% footnotes, will be rendered in bitmap form which will result in a
-% document that can not be IEEE Xplore compliant!
-%
-% Also, note that the amsmath package sets \interdisplaylinepenalty to 10000
-% thus preventing page breaks from occurring within multiline equations. Use:
-\interdisplaylinepenalty=2500
-% after loading amsmath to restore such page breaks as IEEEtran.cls normally
-% does. amsmath.sty is already installed on most LaTeX systems. The latest
-% version and documentation can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/required/amslatex/math/
-
-
-
-
-
-% *** SPECIALIZED LIST PACKAGES ***
-%
-%\usepackage{algorithmic}
-% algorithmic.sty was written by Peter Williams and Rogerio Brito.
-% This package provides an algorithmic environment fo describing algorithms.
-% You can use the algorithmic environment in-text or within a figure
-% environment to provide for a floating algorithm. Do NOT use the algorithm
-% floating environment provided by algorithm.sty (by the same authors) or
-% algorithm2e.sty (by Christophe Fiorio) as IEEE does not use dedicated
-% algorithm float types and packages that provide these will not provide
-% correct IEEE style captions. The latest version and documentation of
-% algorithmic.sty can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/algorithms/
-% There is also a support site at:
-% http://algorithms.berlios.de/index.html
-% Also of interest may be the (relatively newer and more customizable)
-% algorithmicx.sty package by Szasz Janos:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/algorithmicx/
-
-
-
-
-% *** ALIGNMENT PACKAGES ***
-%
-\usepackage{array}
-% Frank Mittelbach's and David Carlisle's array.sty patches and improves
-% the standard LaTeX2e array and tabular environments to provide better
-% appearance and additional user controls. As the default LaTeX2e table
-% generation code is lacking to the point of almost being broken with
-% respect to the quality of the end results, all users are strongly
-% advised to use an enhanced (at the very least that provided by array.sty)
-% set of table tools. array.sty is already installed on most systems. The
-% latest version and documentation can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/required/tools/
-
-
-% IEEEtran contains the IEEEeqnarray family of commands that can be used to
-% generate multiline equations as well as matrices, tables, etc., of high
-% quality.
+\usepackage{epsfig}
+\usepackage{subfigure}
+\usepackage{calc}
+\usepackage{amssymb}
+\usepackage{amstext}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{multicol}
+\usepackage{pslatex}
+\usepackage{apalike}
+\usepackage{SCITEPRESS}
+\usepackage[small]{caption}
 
 \usepackage{siunitx}
 \sisetup{
@@ -250,301 +19,41 @@
   per-mode = symbol
 }
 
-
-% *** SUBFIGURE PACKAGES ***
-%\ifCLASSOPTIONcompsoc
-%  \usepackage[caption=false,font=normalsize,labelfont=sf,textfont=sf]{subfig}
-%\else
-%  \usepackage[caption=false,font=footnotesize]{subfig}
-%\fi
-% subfig.sty, written by Steven Douglas Cochran, is the modern replacement
-% for subfigure.sty, the latter of which is no longer maintained and is
-% incompatible with some LaTeX packages including fixltx2e. However,
-% subfig.sty requires and automatically loads Axel Sommerfeldt's caption.sty
-% which will override IEEEtran.cls' handling of captions and this will result
-% in non-IEEE style figure/table captions. To prevent this problem, be sure
-% and invoke subfig.sty's "caption=false" package option (available since
-% subfig.sty version 1.3, 2005/06/28) as this is will preserve IEEEtran.cls
-% handling of captions.
-% Note that the Computer Society format requires a larger sans serif font
-% than the serif footnote size font used in traditional IEEE formatting
-% and thus the need to invoke different subfig.sty package options depending
-% on whether compsoc mode has been enabled.
-%
-% The latest version and documentation of subfig.sty can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/subfig/
-
-
-
-
-% *** FLOAT PACKAGES ***
-%
-%\usepackage{fixltx2e}
-% fixltx2e, the successor to the earlier fix2col.sty, was written by
-% Frank Mittelbach and David Carlisle. This package corrects a few problems
-% in the LaTeX2e kernel, the most notable of which is that in current
-% LaTeX2e releases, the ordering of single and double column floats is not
-% guaranteed to be preserved. Thus, an unpatched LaTeX2e can allow a
-% single column figure to be placed prior to an earlier double column
-% figure. The latest version and documentation can be found at:
-% http://www.ctan.org/tex-archive/macros/latex/base/
-
-
-%\usepackage{stfloats}
-% stfloats.sty was written by Sigitas Tolusis. This package gives LaTeX2e
-% the ability to do double column floats at the bottom of the page as well
-% as the top. (e.g., "\begin{figure*}[!b]" is not normally possible in
-% LaTeX2e). It also provides a command:
-%\fnbelowfloat
-% to enable the placement of footnotes below bottom floats (the standard
-% LaTeX2e kernel puts them above bottom floats). This is an invasive package
-% which rewrites many portions of the LaTeX2e float routines. It may not work
-% with other packages that modify the LaTeX2e float routines. The latest
-% version and documentation can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/sttools/
-% Do not use the stfloats baselinefloat ability as IEEE does not allow
-% \baselineskip to stretch. Authors submitting work to the IEEE should note
-% that IEEE rarely uses double column equations and that authors should try
-% to avoid such use. Do not be tempted to use the cuted.sty or midfloat.sty
-% packages (also by Sigitas Tolusis) as IEEE does not format its papers in
-% such ways.
-% Do not attempt to use stfloats with fixltx2e as they are incompatible.
-% Instead, use Morten Hogholm'a dblfloatfix which combines the features
-% of both fixltx2e and stfloats:
-%
-% \usepackage{dblfloatfix}
-% The latest version can be found at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/dblfloatfix/
-
-
-%\ifCLASSOPTIONcaptionsoff
-%  \usepackage[nomarkers]{endfloat}
-% \let\MYoriglatexcaption\caption
-% \renewcommand{\caption}[2][\relax]{\MYoriglatexcaption[#2]{#2}}
-%\fi
-% endfloat.sty was written by James Darrell McCauley, Jeff Goldberg and 
-% Axel Sommerfeldt. This package may be useful when used in conjunction with 
-% IEEEtran.cls'  captionsoff option. Some IEEE journals/societies require that
-% submissions have lists of figures/tables at the end of the paper and that
-% figures/tables without any captions are placed on a page by themselves at
-% the end of the document. If needed, the draftcls IEEEtran class option or
-% \CLASSINPUTbaselinestretch interface can be used to increase the line
-% spacing as well. Be sure and use the nomarkers option of endfloat to
-% prevent endfloat from "marking" where the figures would have been placed
-% in the text. The two hack lines of code above are a slight modification of
-% that suggested by in the endfloat docs (section 8.4.1) to ensure that
-% the full captions always appear in the list of figures/tables - even if
-% the user used the short optional argument of \caption[]{}.
-% IEEE papers do not typically make use of \caption[]'s optional argument,
-% so this should not be an issue. A similar trick can be used to disable
-% captions of packages such as subfig.sty that lack options to turn off
-% the subcaptions:
-% For subfig.sty:
-% \let\MYorigsubfloat\subfloat
-% \renewcommand{\subfloat}[2][\relax]{\MYorigsubfloat[]{#2}}
-% However, the above trick will not work if both optional arguments of
-% the \subfloat command are used. Furthermore, there needs to be a
-% description of each subfigure *somewhere* and endfloat does not add
-% subfigure captions to its list of figures. Thus, the best approach is to
-% avoid the use of subfigure captions (many IEEE journals avoid them anyway)
-% and instead reference/explain all the subfigures within the main caption.
-% The latest version of endfloat.sty and its documentation can obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/endfloat/
-%
-% The IEEEtran \ifCLASSOPTIONcaptionsoff conditional can also be used
-% later in the document, say, to conditionally put the References on a 
-% page by themselves.
-
-
-
-
-% *** PDF, URL AND HYPERLINK PACKAGES ***
-%
-\usepackage{url}
-% url.sty was written by Donald Arseneau. It provides better support for
-% handling and breaking URLs. url.sty is already installed on most LaTeX
-% systems. The latest version and documentation can be obtained at:
-% http://www.ctan.org/tex-archive/macros/latex/contrib/url/
-% Basically, \url{my_url_here}.
-
-
-
-% *** Do not adjust lengths that control margins, column widths, etc. ***
-% *** Do not use packages that alter fonts (such as pslatex).         ***
-% There should be no need to do such things with IEEEtran.cls V1.6 and later.
-% (Unless specifically asked to do so by the journal or conference you plan
-% to submit to, of course. )
-
-
-% correct bad hyphenation here
-\hyphenation{op-tical net-works semi-conduc-tor}
-
-
-
-\author{
-\IEEEauthorblockN{Paul Balzer}
-\IEEEauthorblockA{University of Applied Sciences\\
-Dresden, Germany\\
-balzer@htw-dresden.de}
-\and
-\IEEEauthorblockN{Toralf Trautmann}
-\IEEEauthorblockA{University of Applied Sciences\\
-Dresden, Germany\\
-trautmann@mw.htw-dresden.de}
-\and
-\IEEEauthorblockN{Oliver Michler}
-\IEEEauthorblockA{Technical University\\
-Dresden, Germany\\
-oliver.michler@tu-dresden.de}
-}
-
-%\author{
-%\IEEEauthorblockN{t.b.d.}
-%\IEEEauthorblockA{t.b.d.\\
-%t.b.d.}
-%\and
-%\IEEEauthorblockN{t.b.d.}
-%\IEEEauthorblockA{t.b.d.\\
-%t.b.d.}
-%\and
-%\IEEEauthorblockN{t.b.d.}
-%\IEEEauthorblockA{t.b.d.\\
-%t.b.d.}
-%}
-
-
-
-
+\subfigtopskip=0pt
+\subfigcapskip=0pt
+\subfigbottomskip=0pt
 
 \begin{document}
-%
-% paper title
-% can use linebreaks \\ within to get better formatting as desired
-% Do not put math or special symbols in the title.
+
 \title{EPE and Speed Adaptive Extended Kalman Filter for Vehicle Position and Attitude Estimation with Low Cost GNSS and IMU Sensors}
-%
-%
-% author names and IEEE memberships
-% note positions of commas and nonbreaking spaces ( ~ ) LaTeX will not break
-% a structure at a ~ so this keeps an author's name from being broken across
-% two lines.
-% use \thanks{} to gain access to the first footnote area
-% a separate \thanks must be used for each paragraph as LaTeX2e's \thanks
-% was not built to handle multiple paragraphs
-%
 
-%\author{Paul~Balzer$^\diamond$,
-%        Toralf~Trautmann$^\diamond$,
-%        Oliver~Michler$^\star$% <-this % stops a space
-%\thanks{$^\diamond$HTW Dresden, MechLab, balzer@htw-dresden.de}% <-this % stops a space
-%\thanks{$^\diamond$HTW Dresden, MechLab, trautmann@mw.htw-%dresden.de}% <-this % stops a space
-%\thanks{$^\star$TU Dresden, ITVS, oliver.michler@tu-dresden.de}}
+\author{\authorname{P. Balzer\sup{1}, T. Trautmann\sup{1} and O. Michler\sup{2}}
+\affiliation{\sup{1}Laboratory of Vehicle Mechatronics,\\ Hochschule f\"ur Technik und Wirtschaft Dresden, Friedrich-List-Platz 1, 01069 Dresden, Germany}
+\affiliation{\sup{2}Chair of Transport Systems Information Technology,\\Technische Universit\"at Dresden, Fakult\"at Verkehrswissenschaften "Friedrich List", 01062 Dresden, Germany}
+\email{\{balzer, trautmann\}@htw-dresden.de, oliver.michler@tu-dresden.de}
+}
 
-% note the % following the last \IEEEmembership and also \thanks - 
-% these prevent an unwanted space from occurring between the last author name
-% and the end of the author line. i.e., if you had this:
-% 
-% \author{....lastname \thanks{...} \thanks{...} }
-%                     ^------------^------------^----Do not want these spaces!
-%
-% a space would be appended to the last name and could cause every name on that
-% line to be shifted left slightly. This is one of those "LaTeX things". For
-% instance, "\textbf{A} \textbf{B}" will typeset as "A B" not "AB". To get
-% "AB" then you have to do: "\textbf{A}\textbf{B}"
-% \thanks is no different in this regard, so shield the last } of each \thanks
-% that ends a line with a % and do not let a space in before the next \thanks.
-% Spaces after \IEEEmembership other than the last one are OK (and needed) as
-% you are supposed to have spaces between the names. For what it is worth,
-% this is a minor point as most people would not even notice if the said evil
-% space somehow managed to creep in.
+\keywords{Multisensor Data Fusion, Adaptive, Extended Kalman Filter, Filter Tuning}
 
-
-
-% The paper headers
-\markboth{11th International Conference on Informatics in Control, Automation and Robotics (ICINCO)}%
-{Balzer \MakeLowercase{\textit{et al.}}: EPE and Speed Adaptive Extended Kalman Filter for Vehicle Position and Attitude Estimation with Low Cost GNSS and IMU Sensors}
-% The only time the second header will appear is for the odd numbered pages
-% after the title page when using the twoside option.
-% 
-% *** Note that you probably will NOT want to include the author's ***
-% *** name in the headers of peer review papers.                   ***
-% You can use \ifCLASSOPTIONpeerreview for conditional compilation here if
-% you desire.
-
-
-
-
-% If you want to put a publisher's ID mark on the page you can do it like
-% this:
-%\IEEEpubid{0000--0000/00\$00.00~\copyright~2012 IEEE}
-% Remember, if you use this you must call \IEEEpubidadjcol in the second
-% column for its text to clear the IEEEpubid mark.
-
-
-% use for special paper notices
-\IEEEspecialpapernotice{(Draft)}
-
-
-
-% make the title area
-\maketitle
-
-% As a general rule, do not put math, special symbols or citations
-% in the abstract or keywords.
-\begin{abstract}
-This paper presents a novel approach for an adaptive Extended Kalman Filter (EKF), which is able to handle bad signal quality caused by shading or loss of Doppler Effect for low cost GNSS and IMU sensors fused in a loosely coupled way. It uses the estimated position error as well as the speed to calculate the standard deviation for the measurement uncertainty matrix of the Kalman Filter.
+\abstract{This paper presents a novel approach for an adaptive Extended Kalman Filter (EKF), which is able to handle bad signal quality caused by shading or loss of Doppler Effect for low cost Global Navigation Satellite System (GNSS) receiver and Inertial Measurement Unit (IMU) sensors fused in a loosely coupled way. It uses the estimated  position error as well as the speed to calculate the standard deviation for the measurement uncertainty matrix of the Kalman Filter.
 The filter is very easy to implement, because some conversions of the measurement, as well as the state variables, are made to reduce the complexity of the Jacobians, which are used in the EKF filter algorithm.
 The filter implementation is tested within a simulation and with real data and shows significantly better performance, compared to a standard EKF.
-The developed filter is running in realtime on an embedded device and is able to perform position and attitude estimation of a vehicle with low cost sensors.
-\end{abstract}
+The developed filter is running in realtime on an embedded device and is able to perform position and attitude estimation of a vehicle with low cost sensors.}
 
-% Note that keywords are not normally used for peerreview papers.
-\begin{IEEEkeywords}
-Extended Kalman Filter, Adaptive, Position Estimation
-\end{IEEEkeywords}
+\onecolumn \maketitle \normalsize \vfill
 
+\section{\uppercase{Introduction}}
+\label{sec:introduction}
 
+\noindent The Kalman Filter is widely used in a lot of applications, since R.E. Kalman introduced it in 1960 \cite{Kalman1960}. A vast number of papers have been published about the Kalman Filter and its special variations for special problems. A lot of them adressing problems about sensor fusion for unmanned autonomous vehicles, e.g. \cite{Penarrocha2010,Mourikis2007,Sun2010,Barczyk2011}. Implementations with adaptive calculation of the measurment uncertainty matrices $R$ and $Q$ are presented, e.g. \cite{Bistrovs2012}. Some of them deal with different driving situations (dynamic vs. standing) and using interactive multimodel fusion filtering, e.g. \cite{Toledo-Moreo2007,Stephen2001}. Some papers addressing problems with low cost sensors, e.g. \cite{Rosenberg2006,Toledo-Moreo2007,Kingston2004} and odometry
+to supplement GNSS under signal masking conditions such as tree foliage and urban canyons, e.g. \cite{Stephen2001}.
 
-
-
-
-% For peer review papers, you can put extra information on the cover
-% page as needed:
-% \ifCLASSOPTIONpeerreview
-% \begin{center} \bfseries EDICS Category: 3-BBND \end{center}
-% \fi
-%
-% For peerreview papers, this IEEEtran command inserts a page break and
-% creates the second title. It will be ignored for other modes.
-\IEEEpeerreviewmaketitle
-
-
-
-\section{Introduction}
-% The very first letter is a 2 line initial drop letter followed
-% by the rest of the first word in caps.
-% 
-% form to use if the first word consists of a single letter:
-% \IEEEPARstart{A}{demo} file is ....
-% 
-% form to use if you need the single drop letter followed by
-% normal text (unknown if ever used by IEEE):
-% \IEEEPARstart{A}{}demo file is ....
-% 
-% Some journals put the first two words in caps:
-% \IEEEPARstart{T}{his demo} file is ....
-% 
-% Here we have the typical use of a "T" for an initial drop letter
-% and "HIS" in caps to complete the first word.
-\IEEEPARstart{T}{he} Kalman Filter is widely used in a lot of applications, since R.E. Kalman introduced it in 1960 \cite{Kalman1960}. A vast number of papers have been published about the Kalman Filter and its special variations for special problems. A lot of them adressing problems about sensor fusion for unmanned autonomous vehicles (e.g. \cite{Penarrocha2010,Mourikis2007,Sun2010,Barczyk2011}). Implementations with adaptive calculation of the measurment uncertainty matrices $R$ and $Q$ are presented (e.g. \cite{Bistrovs2012}). Some of them deal with different driving situations (dynamic vs. standing) and using interactive multimodel fusion filtering (e.g. \cite{Toledo-Moreo2007,Stephen2001}). Some papers addressing problems with low cost sensors (e.g. \cite{Rosenberg2006,Toledo-Moreo2007,Kingston2004}) and odometry
-to supplement GNSS under signal masking conditions such as tree foliage and urban canyons (e.g. \cite{Stephen2001}). Most of the papers using additional sensors, like cameras (e.g. \cite{Effertz2009,Holt2004}), wheel revolution sensors (e.g. \cite{Stephen2001}) or lidar sensors (e.g. \cite{Holt2004}) to get a better position estimation.
+Most of the papers using additional sensors like cameras \cite{Effertz2009,Holt2004}, wheel revolution sensors \cite{Stephen2001} or lidar sensors \cite{Holt2004} to get a better position estimation.
 In this paper, we present a novel and very easy to implement adaptive EKF, which only uses low cost GNSS sensor and an intertial measurement unit (acceleration, rotation, magnetometer) to perform very well in dynamic situations and in rest position of a car.
 
-% You must have at least 2 lines in the paragraph with the drop letter
-% (should never be an issue)
+No additional sensors nor a connection to the vehicle CAN is necessary, which recommends the filter for portable devices or Smartphones.
 
-
-\section{Fundamentals}
+\section{\uppercase{Fundamentals}}
 
 \subsection{Kalman Filter}
 
@@ -581,7 +90,7 @@ Both, the Uncented and the Extended Kalman Filter perform evenly well on nonline
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=3.4in]{images/Extended-Kalman-Filter-Step.pdf}
+\includegraphics[width=3.0in]{images/Extended-Kalman-Filter-Step.pdf}
 \caption{Extended Kalman Filter Step}
 \label{EKF}
 \end{figure}
@@ -601,7 +110,7 @@ For this reason, it cannot be used to determine a bias in the position measureme
 With $\text{HDOP}$ as the Horizontal Delution of Precision and $\text{URA}$ as the User Range Accuracy, which is a quantity that is transmitted in the navigation message and that is the predicted (not measured) statistical ranging accuracy.
 
 
-\section{Extended Kalman Filter for CTRV dynamic with Attitude Estimation}
+\section{\uppercase{Extended Kalman Filter for CTRV dynamic with Attitude Estimation}}
 
 The implemented EKF estimates following state vector $x_k$, which is well known as the constant turn rate and velocity (CTRV) vehicle model plus additionally roll and pitch estimation:
 
@@ -634,15 +143,15 @@ The roll and pitch angles, in vehicle coordinate system, are calculated with the
 
 \subsection{Position}
 
-The position $x$ and $y$ is determined with a low cost GNSS receiver. The conversion between WGS84 $Lat$ and $Lon$ degrees to SI units is calculated as follows:
-Assume the earth's radius with $R=\SI{6378}{\kilo\metre}$, then one degree of $Lon$ is
-\begin{equation}arc = \cfrac{2 \pi\cdot R}{\SI{360}{\degree}} =  \SI{111.323}{\kilo\metre\per\degree}\end{equation}
+\noindent The position $x$ and $y$ is determined with a low cost GNSS receiver. The conversion between WGS84 $Lat$ and $Lon$ decimaldegrees to SI units is calculated as follows:
+Assume the earth's radius at a specific altitude with $R=\SI{6378}{\kilo\metre}+alt$, then one degree of $Lon$ at $alt=\SI{0}{\metre}$ is
+\begin{equation}arc = \cfrac{2 \pi\cdot (R+alt)}{\SI{360}{\degree}} =  \SI{111.32}{\kilo\metre\per\degree}\end{equation}
 
 One degree $Lat$ is \SI{111.32}{\kilo\metre} only near the equator. If moving to the poles, the value decreases until it is \SI{0}{\kilo\metre} on North- or Southpole. Taking the $\cos$ of the $Lat$ provides the correct length reduction (see Fig. \ref{LonLatEquatorNorthpole}).
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=2.5in]{images/Longitude-Cos-Latitude-Equator-Northpole}
+\includegraphics[width=3.0in]{images/Longitude-Cos-Latitude-Equator-Northpole}
 \caption{Length of one degree of Longitude, depending on Latitude (WGS84)}
 \label{LonLatEquatorNorthpole}
 \end{figure}
@@ -667,13 +176,7 @@ The state transition function $g(x_k, u_k)$ is defined with
 x_{k+1}=\left[\begin{matrix}x + \frac{v}{\dot\psi} \left(- \sin{\left (\psi \right )} + \sin{\left (T \dot\psi + \psi \right )}\right)\\y + \frac{v}{\dot\psi} \left(\cos{\left (\psi \right )} - \cos{\left (T \dot\psi + \psi \right )}\right)\\T a_{x} + v\\T \dot\psi + \psi\\T \dot\phi + \phi\\T \dot\Theta + \Theta\end{matrix}\right]
 \end{equation}
 
-for $\dot \psi \neq 0$. For straight driving without curvature, the state transition function is
-
-\begin{equation}
-x_{k+1}=\left[\begin{matrix}x + vT \left(\cos(\psi)\right)\\y + vT \left(\sin (\psi) \right) \\ T a_{x} + v\\\psi \\T \dot\phi + \phi\\T \dot\Theta + \Theta\end{matrix}\right]
-\end{equation}
-
-with $T$ as the time between two filtersteps. The Jacobians of the state transition with respect to the state and w.r.t. the control are listed in appendix.
+for $\dot \psi \neq 0$ and with $T$ as the time between two filtersteps. The Jacobians of the state transition with respect to the state and w.r.t. the control are listed in appendix.
 
 \subsection{Process Noise Covariance Matrix Q}
 
@@ -720,6 +223,8 @@ The novel approach, presented in this paper, is the very easy to implement and f
 
 \begin{equation}\label{R}R=diag\left[\begin{matrix}\sigma_{x}^2 & \sigma_{y}^2 & \sigma_{v}^2 & \sigma_{\psi}^2 & \sigma_{\phi}^2 & \sigma_{\Theta}^2 \end{matrix}\right]\end{equation}
 
+The standard deviations are adaptively calculated as follows.
+
 \subsubsection{Position Measurement Uncertainties}
 
 In every EKF filterstep, the standard deviations for $\sigma_x$ and $\sigma_y$ are calculated, depending on the speed and additionally depending on the estimated position error ($EPE$), which is provided by the GNSS modul itself.
@@ -728,7 +233,7 @@ with
 \begin{equation}\label{sigmav}\sigma_v = (v+\epsilon)^{-\xi}\end{equation}
 \begin{equation}\label{sigmaepe}\sigma_\text{EPE} = \zeta \cdot EPE\end{equation}
 
-The variables $\epsilon$, $\xi$ and $\zeta$ are tuneable parameters. Factor $c=s^2$ for unit correction.
+The variables $\epsilon$, $\xi$ and $\zeta$ are tuneable parameters. Factor $[c]=s^2$ for unit correction.
 
 \subsubsection{Attitude Measurement Uncertainty}
 
@@ -746,7 +251,7 @@ Because of the simplifications \eqref{deltax} and \eqref{deltay}, the Jacobian o
 \begin{equation}\label{hgps}J_H=diag\left[\begin{matrix}1 & 1 & 1 & 1 & 1 &1\end{matrix}\right]\end{equation}
 when a new GNSS position measurement is available. In the practical implementation, the GNSS provide position information with \SI{10.0}{\hertz} and the EKF is estimating with \SI{50.0}{\hertz} (IMU measurement frequency). If no GNSS position information is available, the correspondig elements in $J_H$ are zero.
 
-\section{Simulation}
+\section{\uppercase{Simulation}}
 
 \subsection{Simulation Setup}
 
@@ -754,19 +259,21 @@ To evaluate the adaptive EKF, a typical urban scenario, with shading from a buil
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=3.2in]{images/Testdata}
+\includegraphics[width=3.0in]{images/Testdata}
 \caption{Simulated GNSS measurements with vehicle stop and shading from a building (B) as well as ground truth}
 \label{Testdata}
 \end{figure}
 
-The car starts at $x=0$, $y=0$ with $v=\SI{50.0}{\kilo\metre\per\hour}$ and decelerates until it stops. It is standing for $\SI{20}{\second}$ and accelerating until it reaches $v=\SI{50.0}{\kilo\metre\per\hour}$ again. Then it is passing a building, which corrupts the signal quality of the GNSS, and the position measurement is disrupted by $+\SI{15}{\metre}$ in $y$-direction.
+The car starts at $x=0$, $y=0$ with $v=\SI{20.0}{\kilo\metre\per\hour}$ and decelerates until it stops. It is standing for $\SI{10}{\second}$ and accelerating until it reaches $v=\SI{50.0}{\kilo\metre\per\hour}$ again. Then it is passing a building, which corrupts the signal quality of the GNSS, and the position measurement is disrupted by $+\SI{15}{\metre}$ in $y$-direction.
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=3.2in]{images/Testdata-EPE}
+\includegraphics[width=3.0in]{images/Testdata-EPE}
 \caption{Simulated GNSS Estimated Position Error}
 \label{Testdata-EPE}
 \end{figure}
+
+After that, the car performs a slalom maneuvers to evaluate the dynamic capabilities of the filter.
 
 \subsection{Parameter for Adaptive R}
 
@@ -789,7 +296,7 @@ As one can see in Fig. \ref{CTRV-Position-Testdata}, the filter follows the traj
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=3.5in]{images/Extended-Kalman-Filter-CTRV-Position-Testdata}
+\includegraphics[width=3.0in]{images/Extended-Kalman-Filter-CTRV-Position-Testdata}
 \caption{Measurements of GNSS with color coded value for $R$, depending on speed and EPE as well as estimated trajectory of the EKF}
 \label{CTRV-Position-Testdata}
 \end{figure}
@@ -818,11 +325,11 @@ In comparison, the adaptive EKF reduces the $\Sigma \text{CTE}_{x,y}^2$ by aroun
 
 Note, that the standard EKF could set up with high values for $R$ as well and may have better CTE values, but then, like for all filters, the dynamic is getting lost.
 
-\section{Experimental Setup}
+\section{\uppercase{Experimental Setup}}
 
 \subsection{Low Cost Sensors}
 
-The measurement and control data of the filter were logged by a LSM303 3-axis accelerometer and 3-axis magnetometer, ITG-3200 3-axis gyro and PA6H GNSS receiver. The sensors are available with the Tinkerforge IMU Brick\footnote{\url{http://www.tinkerforge.com/en/doc/Hardware/Bricks/IMU_Brick.html}} and GPS Bricklet\footnote{\url{http://www.tinkerforge.com/en/doc/Hardware/Bricklets/GPS.html}}.
+The measurement and control data of the filter were logged by a LSM303 3-axis accelerometer and 3-axis magnetometer, ITG-3200 3-axis gyro and PA6H GNSS receiver. The sensors are available with the Tinkerforge IMU Brick and GPS Bricklet.
 
 All sensors are mobile, so no connection to the car is neccessary, but could improve the estimation.
 
@@ -830,13 +337,13 @@ All sensors are mobile, so no connection to the car is neccessary, but could imp
 
 The ground truth was logged with a multifrequency aerial antenna (JAVAD GrAnt-G3T) and -receiver (JAVAD Delta), corrected with a virtual reference station (VRS) and Satellite Positioning Service of the German State Survey (SAPOS) data via GPRS modem (come2ascos GenPro).
 
-\section{Experimental Results}
+\section{\uppercase{Experimental Results}}
 
 
 
 \begin{figure}[h!]
 \centering
-\includegraphics[width=3.4in]{images/Extended-Kalman-Filter-CTRV-Position}
+\includegraphics[width=3.0in]{images/Extended-Kalman-Filter-CTRV-Position}
 \caption{Performed test drive with adaptive values of measurement uncertainty values for matrix $R$. (GNSS measurement dots are reduced to every 10th for better visualisation in this figure)}
 \label{ctrv-position}
 \end{figure}
@@ -845,7 +352,7 @@ The state variables $x_k$ for the scenario were estimated as shown in Fig. \ref{
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=3.5in]{images/Extended-Kalman-Filter-CTRV-Attitude-State-Estimates}
+\includegraphics[width=3.0in]{images/Extended-Kalman-Filter-CTRV-Attitude-State-Estimates}
 \caption{Estimated state variables $x_k$ for real world test drive}
 \label{ctrv-states}
 \end{figure}
@@ -854,7 +361,7 @@ As one can see, the stop before the right turn got a high position measurement u
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=3.2in]{images/Extended-Kalman-Filter-CTRV-Position-Detail}
+\includegraphics[width=3.0in]{images/Extended-Kalman-Filter-CTRV-Position-Detail}
 \caption{Detailed view of the stop within the performed test drive with raised uncertainty for $R$. (GNSS measurement dots are reduced to every 10th for better visualisation in this figure)}
 \label{ctrv-position-detail}
 \end{figure}
@@ -865,135 +372,38 @@ The values for the measurement uncertainties in $R$ are calculated like shown in
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=3.2in]{images/Extended-Kalman-Filter-CTRV-Adaptive-R}
+\includegraphics[width=3.0in]{images/Extended-Kalman-Filter-CTRV-Adaptive-R}
 \caption{Values for adaptive $\sigma_v$, $\sigma_{EPE}$ and resulting $\sigma$ for $x$ and $y$}
 \label{adaptive-R}
 \end{figure}
 
+\section{\uppercase{Conclusions}}
+\label{sec:conclusion}
 
-% needed in second column of first page if using \IEEEpubid
-%\IEEEpubidadjcol
-
-
-% An example of a floating figure using the graphicx package.
-% Note that \label must occur AFTER (or within) \caption.
-% For figures, \caption should occur after the \includegraphics.
-% Note that IEEEtran v1.7 and later has special internal code that
-% is designed to preserve the operation of \label within \caption
-% even when the captionsoff option is in effect. However, because
-% of issues like this, it may be the safest practice to put all your
-% \label just after \caption rather than within \caption{}.
-%
-% Reminder: the "draftcls" or "draftclsnofoot", not "draft", class
-% option should be used if it is desired that the figures are to be
-% displayed while in draft mode.
-%
-%\begin{figure}[!t]
-%\centering
-%\includegraphics[width=2.5in]{myfigure}
-% where an .eps filename suffix will be assumed under latex, 
-% and a .pdf suffix will be assumed for pdflatex; or what has been declared
-% via \DeclareGraphicsExtensions.
-%\caption{Simulation Results.}
-%\label{fig_sim}
-%\end{figure}
-
-% Note that IEEE typically puts floats only at the top, even when this
-% results in a large percentage of a column being occupied by floats.
-
-
-% An example of a double column floating figure using two subfigures.
-% (The subfig.sty package must be loaded for this to work.)
-% The subfigure \label commands are set within each subfloat command,
-% and the \label for the overall figure must come after \caption.
-% \hfil is used as a separator to get equal spacing.
-% Watch out that the combined width of all the subfigures on a 
-% line do not exceed the text width or a line break will occur.
-%
-%\begin{figure*}[!t]
-%\centering
-%\subfloat[Case I]{\includegraphics[width=2.5in]{box}%
-%\label{fig_first_case}}
-%\hfil
-%\subfloat[Case II]{\includegraphics[width=2.5in]{box}%
-%\label{fig_second_case}}
-%\caption{Simulation results.}
-%\label{fig_sim}
-%\end{figure*}
-%
-% Note that often IEEE papers with subfigures do not employ subfigure
-% captions (using the optional argument to \subfloat[]), but instead will
-% reference/describe all of them (a), (b), etc., within the main caption.
-
-
-% An example of a floating table. Note that, for IEEE style tables, the 
-% \caption command should come BEFORE the table. Table text will default to
-% \footnotesize as IEEE normally uses this smaller font for tables.
-% The \label must come after \caption as always.
-%
-%\begin{table}[!t]
-%% increase table row spacing, adjust to taste
-%\renewcommand{\arraystretch}{1.3}
-% if using array.sty, it might be a good idea to tweak the value of
-% \extrarowheight as needed to properly center the text within the cells
-%\caption{An Example of a Table}
-%\label{table_example}
-%\centering
-%% Some packages, such as MDW tools, offer better commands for making tables
-%% than the plain LaTeX2e tabular which is used here.
-%\begin{tabular}{|c||c|}
-%\hline
-%One & Two\\
-%\hline
-%Three & Four\\
-%\hline
-%\end{tabular}
-%\end{table}
-
-
-% Note that IEEE does not put floats in the very first column - or typically
-% anywhere on the first page for that matter. Also, in-text middle ("here")
-% positioning is not used. Most IEEE journals use top floats exclusively.
-% Note that, LaTeX2e, unlike IEEE journals, places footnotes above bottom
-% floats. This can be corrected via the \fnbelowfloat command of the
-% stfloats package.
-
-
-
-\section{Conclusion}
-In this paper we presented a novel approach to adaptively calculate the measurement uncertainty for an improved position and attitude estimation, based on the Estimated Position Error and the speed, determined by the low cost GNSS receiver.
+\noindent In this paper we presented a novel approach to adaptively calculate the measurement uncertainty for an improved position and attitude estimation, based on the Estimated Position Error and the speed, determined by the low cost GNSS receiver.
 We explained the basics and used some empirically chosen values to parametrize the filter. With that, we showed with simulated data, that the filter performes significantly better than a standard Extended Kalman Filter. Based on that, we conducted test drives and used the developed Adaptive EKF for a real world dataset, which proved its ability to improve the position estimation with partly bad signal quality. In addition to that, the filter also performs pretty well on dynamic situations and is not loosing the ability to follow dynamic vehicle movements.
 The filter cannot be used to get rid of bias in position estimation, because the EPE from GNSS has, by definition, no information about static drift of the position information.
 The presented filter can be used to get significantly better results while standing still or driving slowly as well as keeping the heading fixed while do so.
 Additionally, the attitude of the vehicle is estimated, based on the filter presented in \cite{Madgwick2010}.
 
-% if have a single appendix:
-%\appendix[Proof of the Zonklar Equations]
-% or
-%\appendix  % for no appendix heading
-% do not use \section anymore after \appendix, only \section*
-% is possibly needed
+\section*{\uppercase{Acknowledgements}}
 
-% use appendices with more than one appendix
-% then use \section to start each appendix
-% you must declare a \section before using any
-% \subsection or using \label (\appendices by itself
-% starts a section numbered zero.)
-%
+\noindent The authors would like to thank the Free State of Saxony and the European Union, which funded this research from the ESF fond.
 
-% use section* for acknowledgement
-\section*{Acknowledgment}
 
-The authors would like to thank the Free State of Saxony and the European Union, which funded this research from the ESF fond.
-%T.b.d.
+\bibliographystyle{apalike}
+{\small
+\bibliography{bibtex/library.bib}}
 
-\appendices
-\section{Programm Code and EKF Implementation}
-The implemenented EKF code as well as all figures and the data used in this paper can be found online at ... %\url{http://balzer82.github.com/MMAR14}
 
-\section{Jacobians}
+\section*{\uppercase{Appendix}}
 
-The Jacobian of the state transition \eqref{statetransitionfunction} function with respect to the state $x_k$ is defined with
+\noindent \subsection*{Programm Code and EKF Implementation}
+The implemenented EKF code as well as all figures and the data used in this paper can be found online at https://github.com/balzer82/ICINCO-2014
+
+\subsection*{Jacobians}
+
+The Jacobian of the state transition function \eqref{statetransitionfunction} with respect to the state $x_k$ is defined with
 
 \begin{equation}\left[\begin{matrix}1 & 0 & J_{A,13} & J_{A,14} & 0 & 0\\0 & 1 & J_{A,23} & J_{A,24} & 0 & 0\\0 & 0 & 1 & 0 & 0 & 0\\0 & 0 & 0 & 1 & 0 & 0\\0 & 0 & 0 & 0 & 1 & 0\\0 & 0 & 0 & 0 & 0 & 1\end{matrix}\right]\end{equation}
 
@@ -1022,91 +432,6 @@ with
     \end{split}
 \end{equation}
 
-% you can choose not to have a title for an appendix
-% if you want by leaving the argument blank
-
-% Can use something like this to put references on a page
-% by themselves when using endfloat and the captionsoff option.
-\ifCLASSOPTIONcaptionsoff
-  \newpage
-\fi
-
-
-
-% trigger a \newpage just before the given reference
-% number - used to balance the columns on the last page
-% adjust value as needed - may need to be readjusted if
-% the document is modified later
-%\IEEEtriggeratref{8}
-% The "triggered" command can be changed if desired:
-%\IEEEtriggercmd{\enlargethispage{-5in}}
-
-% references section
-
-% can use a bibliography generated by BibTeX as a .bbl file
-% BibTeX documentation can be easily obtained at:
-% http://www.ctan.org/tex-archive/biblio/bibtex/contrib/doc/
-% The IEEEtran BibTeX style support page is at:
-% http://www.michaelshell.org/tex/ieeetran/bibtex/
-\bibliography{bibtex/bib/IEEEabrv.bib,bibtex/bib/library.bib}{}
-\bibliographystyle{IEEEtran}
-% argument is your BibTeX string definitions and bibliography database(s)
-%\bibliography{}
-%
-% <OR> manually copy in the resultant .bbl file
-% set second argument of \begin to the number of references
-% (used to reserve space for the reference number labels box)
-%\begin{thebibliography}{1}
-
-%\bibitem{IEEEhowto:kopka}
-%H.~Kopka and P.~W. Daly, \emph{A Guide to \LaTeX}, 3rd~ed.\hskip 1em plus
-%  0.5em minus 0.4em\relax Harlow, England: Addison-Wesley, 1999.
-%
-%\end{thebibliography}
-
-% biography section
-% 
-% If you have an EPS/PDF photo (graphicx package needed) extra braces are
-% needed around the contents of the optional argument to biography to prevent
-% the LaTeX parser from getting confused when it sees the complicated
-% \includegraphics command within an optional argument. (You could create
-% your own custom macro containing the \includegraphics command to make things
-% simpler here.)
-
-%\begin{IEEEbiography}[{\includegraphics[width=1in,height=1.25in,clip,keepaspectratio]{fotos/Profilbild_Bob_Ross.pdf}}]{Paul~Balzer}Ph.D. Student at the University of Applied Sciences Dresden in cooperation with the Technical University Dresden
-%\end{IEEEbiography}
-
-%\begin{IEEEbiography}{Toralf~Trautmann}, Dr. rer. nat., Professor for vehicle mechatronics at the University of Applied Sciences Dresden
-%\end{IEEEbiography}
-
-%\begin{IEEEbiography}{Oliver~Michler}, Prof. Dr.-Ing., Chair of Transport Systems Information Technology, which is part of  Institute for Traffic Telematics at the Faculty of Transportation and Traffic Sciences ``Friedrich List'' of the Technical University Dresden
-%\end{IEEEbiography}
-
-% or if you just want to reserve a space for a photo:
-
-%\begin{IEEEbiography}{Paul Balzer}
-%Ph.D. student at the HTW Dresden in cooperation with the TU Dresden
-%\end{IEEEbiography}
-
-
-
-% insert where needed to balance the two columns on the last page with
-% biographies
-%\newpage
-
-% You can push biographies down or up by placing
-% a \vfill before or after them. The appropriate
-% use of \vfill depends on what kind of text is
-% on the last page and whether or not the columns
-% are being equalized.
-
-%\vfill
-
-% Can be used to pull up biographies so that the bottom of the last one
-% is flush with the other column.
-%\enlargethispage{-5in}
-
-
-
-% that's all folks
+\vfill
 \end{document}
+
