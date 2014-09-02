@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="ICINCO-2014 : Paper for 11th International Conference on Informatics in Control, Automation and Robotics (ICINCO)">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>ICINCO-2014</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/balzer82/ICINCO-2014">View on GitHub</a>
+
+          <h1 id="project_title">ICINCO-2014</h1>
+          <h2 id="project_tagline">Paper for 11th International Conference on Informatics in Control, Automation and Robotics (ICINCO)</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/balzer82/ICINCO-2014/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/balzer82/ICINCO-2014/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>Paper for <a href="http://icinco.org/">11th International Conference on Informatics in Control, Automation and Robotics (ICINCO)</a>, 1st - 3rd Sep. 2014, Vienna, Austria</p>
+
+<h2>
+<a name="epe-and-speed-adaptive-extended-kalman-filter-for-vehicle-position-and-attitude-estimation-with-low-cost-gnss-and-imu-sensors" class="anchor" href="#epe-and-speed-adaptive-extended-kalman-filter-for-vehicle-position-and-attitude-estimation-with-low-cost-gnss-and-imu-sensors"><span class="octicon octicon-link"></span></a>EPE and Speed Adaptive Extended Kalman Filter for Vehicle Position and Attitude Estimation with Low Cost GNSS and IMU Sensors</h2>
+
+<p>Authors: Paul Balzer ~ Toralf Trautmann ~ Oliver Michler</p>
+
+<p>This paper presents a novel approach for an adaptive Extended Kalman Filter (EKF), which is able to handle bad signal quality caused by shading or loss of Doppler Effect for low cost Global Navigation Satellite System (GNSS) receiver and Inertial Measurement Unit (IMU) sensors fused in a loosely coupled way. It uses the estimated position error as well as the speed to calculate the standard deviation for the measurement uncertainty matrix of the Kalman Filter. The filter is very easy to implement, because some conversions of the measurement, as well as the state variables, are made to reduce the complexity of the Jacobians, which are used in the EKF filter algorithm. The filter implementation is tested within a simulation and with real data and shows significantly better performance, compared to a standard EKF. The developed filter is running in realtime on an embedded device and is able to perform position and attitude estimation of a vehicle with low cost sensors.</p>
+
+<p><em>Available soon in the Conference Proceedings...</em></p>
+
+<h4>
+<a name="take-a-look-at-the-ipython-notebook" class="anchor" href="#take-a-look-at-the-ipython-notebook"><span class="octicon octicon-link"></span></a>Take a look at the <a href="http://nbviewer.ipython.org/github/balzer82/ICINCO-2014/blob/master/Extended-Kalman-Filter-CTRV-Attitude.ipynb">IPython Notebook</a>
+</h4>
+
+<h3>
+<a name="review-statistics" class="anchor" href="#review-statistics"><span class="octicon octicon-link"></span></a>Review Statistics</h3>
+
+<p><img src="Paper-Review-Statistik.png" alt="Review Statistic"></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">ICINCO-2014 maintained by <a href="https://github.com/balzer82">balzer82</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-46744695-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+
+  </body>
+</html>
