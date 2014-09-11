@@ -12,7 +12,13 @@ This paper presents a novel approach for an adaptive Extended Kalman Filter (EKF
 
 *Available soon in the Conference Proceedings...*
 
-#### Take a look at the [IPython Notebook](http://nbviewer.ipython.org/github/balzer82/ICINCO-2014/blob/master/Extended-Kalman-Filter-CTRV-Attitude.ipynb)
+### Poster
+
+![Poster](poster-epe-speed.png)
+
+### Code
+
+Take a look at the [IPython Notebook](http://nbviewer.ipython.org/github/balzer82/ICINCO-2014/blob/master/Extended-Kalman-Filter-CTRV-Attitude.ipynb)
 
 
 ### Review Statistics
